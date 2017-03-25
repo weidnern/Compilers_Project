@@ -11,6 +11,8 @@
 #include "symtab.h"
 #include "bucket.h"
 #include "message.h"
+#include "encode.h"
+#include "tree.h"
 
     int yylex();
     int yyerror(char *s);
@@ -21,9 +23,14 @@
 	int	y_int;
 	double	y_double;
 	char *	y_string;
+	BUCKET_PTR y_bucket;
+	ST_ID y_id; //ST_ID is in defs.h
 	};
 
-%token IDENTIFIER INT_CONSTANT DOUBLE_CONSTANT STRING_LITERAL SIZEOF
+%token <y_string> IDENTIFIER STRING_LITERAL
+%token <y_int> INT_CONSTANT
+%token <y_double> DOUBLE_CONSTANT
+%token SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
