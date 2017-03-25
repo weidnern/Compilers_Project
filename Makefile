@@ -53,7 +53,7 @@ types.o: types.c types.h symtab.h message.h
 
 encode.o: encode.c encode.h
 
-tree.o: tree.c tree.h
+tree.o: tree.c tree.h defs.h types.h symtab.h message.h
 
 bucket.o: bucket.c bucket.h
 
