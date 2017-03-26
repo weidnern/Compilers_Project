@@ -59,8 +59,8 @@
 
 primary_expr
 	: identifier
-	| INT_CONSTANT
-	| DOUBLE_CONSTANT
+	| INT_CONSTANT		{$<y_int>$ = $1;}
+	| DOUBLE_CONSTANT	{$<y_double>$ = $1;}
 	| STRING_LITERAL
 	| '(' expr ')'
 	;
@@ -210,11 +210,13 @@ declaration_specifiers
 
 init_declarator_list
 	: init_declarator
-	| init_declarator_list ',' init_declarator
+	| init_declarator_list ',' { $<y_type>$ = $<y_type>0; } init_declarator
 	;
 
 init_declarator
 	: declarator
+	
+	
 	| declarator '=' initializer
 	;
 
@@ -302,14 +304,14 @@ type_qualifier
 
 declarator
 	: direct_declarator
-	| pointer declarator
+	| pointer declarator	{$<y_type>$ = ty_build_ptr($<y_type>0, NO_QUAL);}
 	;
 
 direct_declarator
-	: identifier
-	| '(' declarator ')'
-	| direct_declarator '[' ']'
-	| direct_declarator '[' constant_expr ']'
+	: identifier			{/*Alloc STDR, try to install, backend*/}
+	| '(' declarator ')'	{$<y_type>$ = $<y_type>2;}
+	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
+	| direct_declarator '[' constant_expr ']'	{$<y_type>$ = ty_build_array($<y_type>0, DIM_PRESENT, $<y_int>3);}
 	| direct_declarator '(' parameter_type_list ')'
 	| direct_declarator '(' ')'
 	;
