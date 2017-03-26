@@ -35,6 +35,6 @@ TNODE pop_node(TNODE tn)
 {
 	TNODE temp = tn;
 	tn = tn->next;
-	free(temp)
+	free(temp);
 	return tn;
 }

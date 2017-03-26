@@ -25,7 +25,12 @@
 	char *	y_string;
 	BUCKET_PTR y_bucket;
 	ST_ID y_id; //ST_ID is in defs.h
+	//TNODE y_tnode;
+	TYPE y_type;
+	TYPE_SPECIFIER y_type_spec;
 	};
+
+%type <y_id> identifier
 
 %token <y_string> IDENTIFIER STRING_LITERAL
 %token <y_int> INT_CONSTANT
@@ -217,8 +222,17 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID | CHAR | SHORT | INT | LONG
-	| FLOAT | DOUBLE | SIGNED | UNSIGNED
+	: VOID 
+	| CHAR 		{/*for 80%*/ $<y_type_spec>$ = CHAR_SPEC; }
+	| SHORT 	{/*for 90%*/ $<y_type_spec>$ = SHORT_SPEC;}
+	| INT 		{/*for 80%*/ $<y_type_spec>$ = INT_SPEC; }
+	| LONG		{/*for 90%*/ $<y_type_spec>$ = LONG_SPEC;}
+	
+	| FLOAT 	{/*for 80%*/ $<y_type_spec>$ = FLOAT_SPEC;}
+	| DOUBLE 	{/*for 80%*/ $<y_type_spec>$ = DOUBLE_SPEC;}
+	| SIGNED 	{/*for 90%*/ $<y_type_spec>$ = SIGNED_SPEC;}
+	| UNSIGNED	{/*for 90%*/ $<y_type_spec>$ = UNSIGNED_SPEC;}
+	
 	| struct_or_union_specifier
 	| enum_specifier
 	| TYPE_NAME
@@ -441,7 +455,8 @@ function_definition
   *******************************/
 
 identifier
-	: IDENTIFIER
+	: IDENTIFIER	{/*enroll the ID into the sym table*/
+					$$ = st_enter_id($1);}
 	;
 %%
 
