@@ -31,6 +31,7 @@
 	};
 
 %type <y_id> identifier
+//%type <y_bucket> declaration_specifiers
 
 %token <y_string> IDENTIFIER STRING_LITERAL
 %token <y_int> INT_CONSTANT
@@ -194,15 +195,15 @@ expr_opt
   *******************************/
 
 declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
+	: declaration_specifiers ';' {error("No identifier listed.\n");}
+	| declaration_specifiers {$<y_type>$ = build_base($<y_bucket>1);} init_declarator_list ';'
 	;
 
 declaration_specifiers
 	: storage_class_specifier
 	| storage_class_specifier declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
+	| type_specifier {$<y_bucket>$ = update_bucket(NULL, $<y_type_spec>1, NULL);}
+	| type_specifier declaration_specifiers { $<y_bucket>$ = update_bucket($<y_bucket>2, $<y_type_spec>1, NULL);}
 	| type_qualifier
 	| type_qualifier declaration_specifiers
 	;

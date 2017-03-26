@@ -36,9 +36,9 @@ CFLAGS = -g
 #
 BACKEND = backend-x86
 
-PCC3H	= defs.h types.h bucket.h symtab.h $(BACKEND).h encode.h tree.h
+PCC3H	= defs.h  encode.h tree.h types.h bucket.h symtab.h $(BACKEND).h
 
-PCC3OBJ = main.o message.o symtab.o types.o bucket.o utils.o gram.o scan.o $(BACKEND).o encode.o tree.o
+PCC3OBJ = main.o message.o symtab.o types.o bucket.o utils.o gram.o scan.o encode.o tree.o $(BACKEND).o
 
 # pcc3 rules
 #
