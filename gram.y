@@ -13,6 +13,7 @@
 #include "message.h"
 #include "encode.h"
 #include "tree.h"
+#include "backend-x86.h"
 
     int yylex();
     int yyerror(char *s);
@@ -308,10 +309,29 @@ declarator
 	;
 
 direct_declarator
-	: identifier			{/*Alloc STDR, try to install, backend*/}
+	: identifier		{/*Alloc STDR, try to install, backend*/
+						ST_ID id = $<y_id>1;
+						char * id_str = st_get_id_str(id);
+						TYPE t = $<y_type>0;
+						ST_DR rec = stdr_alloc();
+						rec->tag = GDECL;
+						rec->u.decl.type = t;
+						if (!st_install(id, rec)) {
+							error("Duplicate declaration for %s.", id_str);
+							stdr_free(rec);
+				  		}
+				  		else {
+				  			//find size and alignment
+				  			int size = get_size(t);
+				  			int alignment = get_alignment(t);
+							b_global_decl(id_str, alignment, size);
+							b_skip(size);
+				  		}
+					  	}
 	| '(' declarator ')'	{$<y_type>$ = $<y_type>2;}
 	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
-	| direct_declarator '[' constant_expr ']'	{$<y_type>$ = ty_build_array($<y_type>0, DIM_PRESENT, $<y_int>3);}
+	| direct_declarator '[' constant_expr ']'	{
+			$<y_type>$ = ty_build_array($<y_type>0, DIM_PRESENT, $<y_int>3);}
 	| direct_declarator '(' parameter_type_list ')'
 	| direct_declarator '(' ')'
 	;

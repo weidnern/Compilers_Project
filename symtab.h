@@ -30,19 +30,19 @@ typedef struct st_dr {
             STORAGE_CLASS sc;
             int binding;
             int regno;
-	    BOOLEAN is_ref;
-	    union {   /* Pascal only */
-		int offset;
-		char *global_func_name;
-	    } v;
+	    	BOOLEAN is_ref;
+	    	union {   /* Pascal only */
+				int offset;
+			char *global_func_name;
+	    	} v;
             BOOLEAN err;
         } decl;
         struct {	/* stag: Struct/Union/Enum tag */
             TYPE type;
         } stag;
-	struct {
-	    TYPE type;
-	} typename;
+		struct {
+	    	TYPE type;
+		} typename;
     } u;
 } ST_DATA_REC, *ST_DR;
 
