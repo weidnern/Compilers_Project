@@ -11,6 +11,8 @@
 #include "defs.h"
 #include "message.h"
 
+
+
 TNODE new_node(TNODE tn, TNODE_TYPE type)
 {
 	TNODE new_node;

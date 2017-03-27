@@ -6,6 +6,7 @@
 #include "types.h"
 #include "symtab.h"
 #include "bucket.h"
+#include "tree.h"
 
 FILE *errfp;		/* file to which message.c will write */
 

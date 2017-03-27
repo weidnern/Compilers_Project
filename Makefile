@@ -36,7 +36,7 @@ CFLAGS = -g
 #
 BACKEND = backend-x86
 
-PCC3H	= defs.h  encode.h tree.h types.h bucket.h symtab.h $(BACKEND).h
+PCC3H	= defs.h encode.h tree.h types.h bucket.h symtab.h $(BACKEND).h
 
 PCC3OBJ = main.o message.o symtab.o types.o bucket.o utils.o gram.o scan.o encode.o tree.o $(BACKEND).o
 
@@ -47,7 +47,7 @@ pcc3     : $(PCC3OBJ)
 
 # dependencies for compiler modules
 
-main.o: main.c defs.h types.h symtab.h
+main.o: main.c defs.h types.h symtab.h tree.h
 
 types.o: types.c types.h symtab.h message.h
 

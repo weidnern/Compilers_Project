@@ -8,7 +8,7 @@
 #include "types.h"
 #include "message.h"
 
-int get_size(TYPE t);
-int get_alignment(TYPE t);
+unsigned int get_size(TYPE t);
+unsigned int get_alignment(TYPE t);
 
 #endif

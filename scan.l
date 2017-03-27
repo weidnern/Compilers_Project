@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <string.h>
 
+#include "tree.h"
 #include "defs.h"
 #include "types.h"
 #include "symtab.h"
@@ -14,6 +15,7 @@
 #include "bucket.h"
 #include BACKEND_HEADER_FILE
 #include "y.tab.h"
+#include "tree.h"
 
 #undef yywrap
 

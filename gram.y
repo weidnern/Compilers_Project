@@ -26,13 +26,12 @@
 	char *	y_string;
 	BUCKET_PTR y_bucket;
 	ST_ID y_id; //ST_ID is in defs.h
-	//TNODE y_tnode;
+	TNODE y_tnode;
 	TYPE y_type;
 	TYPE_SPECIFIER y_type_spec;
 	};
 
 %type <y_id> identifier
-//%type <y_bucket> declaration_specifiers
 
 %token <y_string> IDENTIFIER STRING_LITERAL
 %token <y_int> INT_CONSTANT
@@ -215,9 +214,7 @@ init_declarator_list
 	;
 
 init_declarator
-	: declarator
-	
-	
+	: declarator		
 	| declarator '=' initializer
 	;
 
@@ -322,8 +319,8 @@ direct_declarator
 				  		}
 				  		else {
 				  			//find size and alignment
-				  			int size = get_size(t);
-				  			int alignment = get_alignment(t);
+				  			unsigned int size = get_size(t);
+				  			unsigned int alignment = get_alignment(t);
 							b_global_decl(id_str, alignment, size);
 							b_skip(size);
 				  		}
