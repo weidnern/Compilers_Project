@@ -1,0 +1,1733 @@
+Comments for self-test -------- Mon Mar 27, 2017 at 19:38:33 EDT
+No illegal files found
+Testing pcc3:
+  Attempting to build pcc3 ... ok
+
+
+LEVEL 80:
+
+Running pcc3 with input T1L80_ok.c ... nonzero termination status
+  T1L80_ok.err exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+1,49c1,220
+< Starting parse
+< Entering state 0
+< Reading a token: Next token is token INT ()
+< Shifting token INT ()
+< Entering state 10
+< Reducing stack by rule 102 (line 262):
+<    $1 = token INT ()
+< line 5: ERROR -- Found int
+< -> $$ = nterm type_specifier ()
+< Stack now 0
+< Entering state 28
+< Reading a token: Next token is token IDENTIFIER ()
+< Reducing stack by rule 85 (line 217):
+<    $1 = nterm type_specifier ()
+< line 5: ERROR -- type_spec bucket
+< -> $$ = nterm declaration_specifiers ()
+< Stack now 0
+< Entering state 26
+< Next token is token IDENTIFIER ()
+< Shifting token IDENTIFIER ()
+< Entering state 1
+< Reducing stack by rule 208 (line 502):
+<    $1 = token IDENTIFIER ()
+< line 5: ERROR -- Found id: a
+< -> $$ = nterm identifier ()
+< Stack now 0 26
+< Entering state 39
+< Reducing stack by rule 139 (line 343):
+<    $1 = nterm identifier ()
+< line 5: ERROR -- Make id node
+< line 5: ERROR -- Node id: a
+< -> $$ = nterm direct_declarator ()
+< Stack now 0 26
+< Entering state 34
+< Reading a token: Next token is token ';' ()
+< Reducing stack by rule 137 (line 337):
+<    $1 = nterm direct_declarator ()
+< line 5: ERROR -- direct_declarator
+< -> $$ = nterm declarator ()
+< Stack now 0 26
+< Entering state 49
+< Next token is token ';' ()
+< line 5: ERROR -- syntax error (column 6)
+< Error: popping nterm declarator ()
+< Stack now 0 26
+< Error: popping nterm declaration_specifiers ()
+< Stack now 0
+< Cleanup: discarding lookahead token ';' ()
+< Stack now 0
+---
+> 
+> 
+>         Dump: Id  = a
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = b
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = float
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = c
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = d
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = signed char
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = e
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = f
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = g
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = i
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = p1
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = p2
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to <no qual> pointer to signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = p3
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to <no qual> pointer to <no qual> pointer to signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = p4
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to <no qual> pointer to <no qual> pointer to <no qual> pointer to signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = iaaa
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 10 array of 10 array of 10 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = x1
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 5 <no qual> pointer to signed char
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = x2
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 5 array of 5 <no qual> pointer to <no qual> pointer to signed char
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = x3
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to array of 5 <no qual> pointer to array of 5 signed char
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = da
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 25 double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = iaa
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 10 array of 10 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = fp
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to float
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = ia
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 10 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+^^^^^
+  T1L80_ok.s exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+4a5,169
+> 				# b_global_decl (a, alignment = 4, size = 4)
+> .globl a
+> 	.data
+> 	.align	4
+> 	.type	a, @object
+> 	.size	a, 4
+> a:
+> 	.zero	4
+>  #    6
+> 				# b_global_decl (b, alignment = 4, size = 4)
+> .globl b
+> 	.align	4
+> 	.type	b, @object
+> 	.size	b, 4
+> b:
+> 	.zero	4
+>  #    7
+> 				# b_global_decl (c, alignment = 8, size = 8)
+> .globl c
+> 	.align	8
+> 	.type	c, @object
+> 	.size	c, 8
+> c:
+> 	.zero	8
+>  #    8
+> 				# b_global_decl (d, alignment = 1, size = 1)
+> .globl d
+> 	.align	1
+> 	.type	d, @object
+> 	.size	d, 1
+> d:
+> 	.zero	1
+>  #    9
+>  #   10
+>  #   11
+>  #   12
+> 				# b_global_decl (e, alignment = 8, size = 8)
+> .globl e
+> 	.align	8
+> 	.type	e, @object
+> 	.size	e, 8
+> e:
+> 	.zero	8
+> 				# b_global_decl (f, alignment = 8, size = 8)
+> .globl f
+> 	.align	8
+> 	.type	f, @object
+> 	.size	f, 8
+> f:
+> 	.zero	8
+> 				# b_global_decl (g, alignment = 8, size = 8)
+> .globl g
+> 	.align	8
+> 	.type	g, @object
+> 	.size	g, 8
+> g:
+> 	.zero	8
+>  #   13
+>  #   14
+>  #   15
+>  #   16
+> 				# b_global_decl (i, alignment = 4, size = 4)
+> .globl i
+> 	.align	4
+> 	.type	i, @object
+> 	.size	i, 4
+> i:
+> 	.zero	4
+> 				# b_global_decl (p1, alignment = 4, size = 4)
+> .globl p1
+> 	.align	4
+> 	.type	p1, @object
+> 	.size	p1, 4
+> p1:
+> 	.zero	4
+> 				# b_global_decl (p2, alignment = 4, size = 4)
+> .globl p2
+> 	.align	4
+> 	.type	p2, @object
+> 	.size	p2, 4
+> p2:
+> 	.zero	4
+> 				# b_global_decl (p3, alignment = 4, size = 4)
+> .globl p3
+> 	.align	4
+> 	.type	p3, @object
+> 	.size	p3, 4
+> p3:
+> 	.zero	4
+> 				# b_global_decl (p4, alignment = 4, size = 4)
+> .globl p4
+> 	.align	4
+> 	.type	p4, @object
+> 	.size	p4, 4
+> p4:
+> 	.zero	4
+>  #   17
+>  #   18
+> 				# b_global_decl (fp, alignment = 4, size = 4)
+> .globl fp
+> 	.align	4
+> 	.type	fp, @object
+> 	.size	fp, 4
+> fp:
+> 	.zero	4
+>  #   19
+>  #   20
+>  #   21
+>  #   22
+> 				# b_global_decl (ia, alignment = 4, size = 40)
+> .globl ia
+> 	.align	4
+> 	.type	ia, @object
+> 	.size	ia, 40
+> ia:
+> 	.zero	40
+> 				# b_global_decl (iaa, alignment = 4, size = 400)
+> .globl iaa
+> 	.align	4
+> 	.type	iaa, @object
+> 	.size	iaa, 400
+> iaa:
+> 	.zero	400
+> 				# b_global_decl (iaaa, alignment = 4, size = 4000)
+> .globl iaaa
+> 	.align	4
+> 	.type	iaaa, @object
+> 	.size	iaaa, 4000
+> iaaa:
+> 	.zero	4000
+>  #   23
+> 				# b_global_decl (da, alignment = 8, size = 200)
+> .globl da
+> 	.align	8
+> 	.type	da, @object
+> 	.size	da, 200
+> da:
+> 	.zero	200
+>  #   24
+>  #   25
+>  #   26
+>  #   27
+> 				# b_global_decl (x1, alignment = 4, size = 20)
+> .globl x1
+> 	.align	4
+> 	.type	x1, @object
+> 	.size	x1, 20
+> x1:
+> 	.zero	20
+> 				# b_global_decl (x2, alignment = 4, size = 100)
+> .globl x2
+> 	.align	4
+> 	.type	x2, @object
+> 	.size	x2, 100
+> x2:
+> 	.zero	100
+> 				# b_global_decl (x3, alignment = 4, size = 4)
+> .globl x3
+> 	.align	4
+> 	.type	x3, @object
+> 	.size	x3, 4
+> x3:
+> 	.zero	4
+>  #   28
+>  #   29
+^^^^^
+Running pcc3 with input T1L80_err.c ... nonzero termination status
+  T1L80_err.err exists
+  Comparing with solution file ... Comparing error messages:
+-----Yours:-----
+Starting parse
+Entering state 0
+Reading a token: Next token is token INT ()
+Shifting token INT ()
+Entering state 10
+Reducing stack by rule 102 (line 262):
+   $1 = token INT ()
+line 4: ERROR -- Found int
+-> $$ = nterm type_specifier ()
+Stack now 0
+Entering state 28
+Reading a token: Next token is token IDENTIFIER ()
+Reducing stack by rule 85 (line 217):
+   $1 = nterm type_specifier ()
+line 4: ERROR -- type_spec bucket
+-> $$ = nterm declaration_specifiers ()
+Stack now 0
+Entering state 26
+Next token is token IDENTIFIER ()
+Shifting token IDENTIFIER ()
+Entering state 1
+Reducing stack by rule 208 (line 502):
+   $1 = token IDENTIFIER ()
+line 4: ERROR -- Found id: a
+-> $$ = nterm identifier ()
+Stack now 0 26
+Entering state 39
+Reducing stack by rule 139 (line 343):
+   $1 = nterm identifier ()
+line 4: ERROR -- Make id node
+line 4: ERROR -- Node id: a
+-> $$ = nterm direct_declarator ()
+Stack now 0 26
+Entering state 34
+Reading a token: Next token is token ';' ()
+Reducing stack by rule 137 (line 337):
+   $1 = nterm direct_declarator ()
+line 4: ERROR -- direct_declarator
+-> $$ = nterm declarator ()
+Stack now 0 26
+Entering state 49
+Next token is token ';' ()
+line 4: ERROR -- syntax error (column 6)
+Error: popping nterm declarator ()
+Stack now 0 26
+Error: popping nterm declaration_specifiers ()
+Stack now 0
+Cleanup: discarding lookahead token ';' ()
+Stack now 0
+-----Mine:------
+line 30: ERROR -- no declarator in declaration
+line 31: ERROR -- duplicate declaration for a
+line 31: ERROR -- duplicate definition of `a'
+line 32: ERROR -- illegal array dimension
+================
+
+
+LEVEL 90:
+
+Running pcc3 with input T1L90_ok.c ... nonzero termination status
+  T1L90_ok.err exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+1,63c1,109
+< Starting parse
+< Entering state 0
+< Reading a token: Next token is token SIGNED ()
+< Shifting token SIGNED ()
+< Entering state 12
+< Reducing stack by rule 106 (line 267):
+<    $1 = token SIGNED ()
+< -> $$ = nterm type_specifier ()
+< Stack now 0
+< Entering state 28
+< Reading a token: Next token is token INT ()
+< Shifting token INT ()
+< Entering state 10
+< Reducing stack by rule 102 (line 262):
+<    $1 = token INT ()
+< line 5: ERROR -- Found int
+< -> $$ = nterm type_specifier ()
+< Stack now 0 28
+< Entering state 28
+< Reading a token: Next token is token IDENTIFIER ()
+< Reducing stack by rule 85 (line 217):
+<    $1 = nterm type_specifier ()
+< line 5: ERROR -- type_spec bucket
+< -> $$ = nterm declaration_specifiers ()
+< Stack now 0 28
+< Entering state 51
+< Reducing stack by rule 86 (line 218):
+<    $1 = nterm type_specifier ()
+<    $2 = nterm declaration_specifiers ()
+< -> $$ = nterm declaration_specifiers ()
+< Stack now 0
+< Entering state 26
+< Next token is token IDENTIFIER ()
+< Shifting token IDENTIFIER ()
+< Entering state 1
+< Reducing stack by rule 208 (line 502):
+<    $1 = token IDENTIFIER ()
+< line 5: ERROR -- Found id: a
+< -> $$ = nterm identifier ()
+< Stack now 0 26
+< Entering state 39
+< Reducing stack by rule 139 (line 343):
+<    $1 = nterm identifier ()
+< line 5: ERROR -- Make id node
+< line 5: ERROR -- Node id: a
+< -> $$ = nterm direct_declarator ()
+< Stack now 0 26
+< Entering state 34
+< Reading a token: Next token is token ';' ()
+< Reducing stack by rule 137 (line 337):
+<    $1 = nterm direct_declarator ()
+< line 5: ERROR -- direct_declarator
+< -> $$ = nterm declarator ()
+< Stack now 0 26
+< Entering state 49
+< Next token is token ';' ()
+< line 5: ERROR -- syntax error (column 13)
+< Error: popping nterm declarator ()
+< Stack now 0 26
+< Error: popping nterm declaration_specifiers ()
+< Stack now 0
+< Cleanup: discarding lookahead token ';' ()
+< Stack now 0
+---
+> 
+> 
+>         Dump: Id  = a
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = b
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = unsigned int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = c
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = unsigned long int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = d
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = signed short int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = h
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype
+> 	<parameter list is null>
+> 		returning signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = i
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype
+> 	<parameter list is null>
+> 		returning double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = j
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype
+> 	<parameter list is null>
+> 		returning <no qual> pointer to signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = k
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to function prototype
+> 	<parameter list is null>
+> 		returning signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = l
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 10 <no qual> pointer to function prototype
+> 	<parameter list is null>
+> 		returning signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+^^^^^
+  T1L90_ok.s exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+4a5,63
+> 				# b_global_decl (a, alignment = 4, size = 4)
+> .globl a
+> 	.data
+> 	.align	4
+> 	.type	a, @object
+> 	.size	a, 4
+> a:
+> 	.zero	4
+>  #    6
+> 				# b_global_decl (b, alignment = 4, size = 4)
+> .globl b
+> 	.align	4
+> 	.type	b, @object
+> 	.size	b, 4
+> b:
+> 	.zero	4
+>  #    7
+> 				# b_global_decl (c, alignment = 4, size = 4)
+> .globl c
+> 	.align	4
+> 	.type	c, @object
+> 	.size	c, 4
+> c:
+> 	.zero	4
+>  #    8
+> 				# b_global_decl (d, alignment = 2, size = 2)
+> .globl d
+> 	.align	2
+> 	.type	d, @object
+> 	.size	d, 2
+> d:
+> 	.zero	2
+>  #    9
+>  #   10
+>  #   11
+>  #   12
+>  #   13
+>  #   14
+>  #   15
+>  #   16
+>  #   17
+>  #   18
+> 				# b_global_decl (k, alignment = 4, size = 4)
+> .globl k
+> 	.align	4
+> 	.type	k, @object
+> 	.size	k, 4
+> k:
+> 	.zero	4
+>  #   19
+> 				# b_global_decl (l, alignment = 4, size = 40)
+> .globl l
+> 	.align	4
+> 	.type	l, @object
+> 	.size	l, 40
+> l:
+> 	.zero	40
+>  #   20
+>  #   21
+^^^^^
+Running pcc3 with input T1L90_err.c ... nonzero termination status
+  T1L90_err.err exists
+  Comparing with solution file ... Comparing error messages:
+-----Yours:-----
+Starting parse
+Entering state 0
+Reading a token: Next token is token SIGNED ()
+Shifting token SIGNED ()
+Entering state 12
+Reducing stack by rule 106 (line 267):
+   $1 = token SIGNED ()
+-> $$ = nterm type_specifier ()
+Stack now 0
+Entering state 28
+Reading a token: Next token is token INT ()
+Shifting token INT ()
+Entering state 10
+Reducing stack by rule 102 (line 262):
+   $1 = token INT ()
+line 4: ERROR -- Found int
+-> $$ = nterm type_specifier ()
+Stack now 0 28
+Entering state 28
+Reading a token: Next token is token IDENTIFIER ()
+Reducing stack by rule 85 (line 217):
+   $1 = nterm type_specifier ()
+line 4: ERROR -- type_spec bucket
+-> $$ = nterm declaration_specifiers ()
+Stack now 0 28
+Entering state 51
+Reducing stack by rule 86 (line 218):
+   $1 = nterm type_specifier ()
+   $2 = nterm declaration_specifiers ()
+-> $$ = nterm declaration_specifiers ()
+Stack now 0
+Entering state 26
+Next token is token IDENTIFIER ()
+Shifting token IDENTIFIER ()
+Entering state 1
+Reducing stack by rule 208 (line 502):
+   $1 = token IDENTIFIER ()
+line 4: ERROR -- Found id: a
+-> $$ = nterm identifier ()
+Stack now 0 26
+Entering state 39
+Reducing stack by rule 139 (line 343):
+   $1 = nterm identifier ()
+line 4: ERROR -- Make id node
+line 4: ERROR -- Node id: a
+-> $$ = nterm direct_declarator ()
+Stack now 0 26
+Entering state 34
+Reading a token: Next token is token ';' ()
+Reducing stack by rule 137 (line 337):
+   $1 = nterm direct_declarator ()
+line 4: ERROR -- direct_declarator
+-> $$ = nterm declarator ()
+Stack now 0 26
+Entering state 49
+Next token is token ';' ()
+line 4: ERROR -- syntax error (column 13)
+Error: popping nterm declarator ()
+Stack now 0 26
+Error: popping nterm declaration_specifiers ()
+Stack now 0
+Cleanup: discarding lookahead token ';' ()
+Stack now 0
+-----Mine:------
+line 11: ERROR -- illegal size specifier
+line 12: ERROR -- illegal size specifier
+line 13: ERROR -- illegal sign specifier
+line 28: ERROR -- cannot have function returning function
+line 29: ERROR -- cannot have function returning array
+line 30: ERROR -- cannot have array of functions
+================
+
+
+LEVEL 100:
+
+Running pcc3 with input T1L100_ok.c ... nonzero termination status
+  T1L100_ok.err exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+1,61c1,230
+< Starting parse
+< Entering state 0
+< Reading a token: Next token is token VOID ()
+< Shifting token VOID ()
+< Entering state 18
+< Reducing stack by rule 99 (line 259):
+<    $1 = token VOID ()
+< -> $$ = nterm type_specifier ()
+< Stack now 0
+< Entering state 28
+< Reading a token: Next token is token IDENTIFIER ()
+< Reducing stack by rule 85 (line 217):
+<    $1 = nterm type_specifier ()
+< line 3: ERROR -- type_spec bucket
+< -> $$ = nterm declaration_specifiers ()
+< Stack now 0
+< Entering state 26
+< Next token is token IDENTIFIER ()
+< Shifting token IDENTIFIER ()
+< Entering state 1
+< Reducing stack by rule 208 (line 502):
+<    $1 = token IDENTIFIER ()
+< line 3: ERROR -- Found id: a
+< -> $$ = nterm identifier ()
+< Stack now 0 26
+< Entering state 39
+< Reducing stack by rule 139 (line 343):
+<    $1 = nterm identifier ()
+< line 3: ERROR -- Make id node
+< line 3: ERROR -- Node id: a
+< -> $$ = nterm direct_declarator ()
+< Stack now 0 26
+< Entering state 34
+< Reading a token: Next token is token '(' ()
+< Shifting token '(' ()
+< Entering state 57
+< Reading a token: Next token is token ')' ()
+< Shifting token ')' ()
+< Entering state 134
+< Reducing stack by rule 144 (line 357):
+<    $1 = nterm direct_declarator ()
+<    $2 = token '(' ()
+<    $3 = token ')' ()
+< -> $$ = nterm direct_declarator ()
+< Stack now 0 26
+< Entering state 34
+< Reading a token: Next token is token ';' ()
+< Reducing stack by rule 137 (line 337):
+<    $1 = nterm direct_declarator ()
+< line 3: ERROR -- direct_declarator
+< -> $$ = nterm declarator ()
+< Stack now 0 26
+< Entering state 49
+< Next token is token ';' ()
+< line 3: ERROR -- syntax error (column 9)
+< Error: popping nterm declarator ()
+< Stack now 0 26
+< Error: popping nterm declaration_specifiers ()
+< Stack now 0
+< Cleanup: discarding lookahead token ';' ()
+< Stack now 0
+---
+> 
+> 
+>         Dump: Id  = a
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype
+> 	<parameter list is null>
+> 		returning void
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = b
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype
+> 	<parameter list is null>
+> 		returning signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = c
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype
+> 	<parameter list is null>
+> 		returning double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = d
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type signed int
+> 		)		returning signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = e
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type unsigned char
+> 		)		returning float
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = f
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type double
+> 		)		returning signed short int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = g
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type signed long int
+> 	param: id b; type double
+> 		)		returning double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = h
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type signed int
+> 	param: id b; type unsigned int
+> 	param: id c; type double
+> 		)		returning void
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = i
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type <no qual> pointer to signed int
+> 		)		returning void
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = j
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type array of 5 signed int
+> 		)		returning float
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = k
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id f; type <no qual> pointer to function prototype
+> 	<parameter list is null>
+> 		returning signed char
+> 		)		returning signed long int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = l
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type <no qual> pointer to <no qual> pointer to unsigned char
+> 	param: id b; type array of 5 signed long int
+> 	param: id c; type function prototype
+> 	<parameter list is null>
+> 		returning <no qual> pointer to double
+> 		)		returning unsigned short int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = m
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type reference to signed int
+> 		)		returning void
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = n
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id x; type reference to <no qual> pointer to signed int
+> 		)		returning signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = o
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type reference to double
+> 	param: id b; type reference to double
+> 	param: id c; type signed int
+> 		)		returning signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = p
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = function prototype (
+> 	param: id a; type signed int
+> 	param: id b; type reference to signed int
+> 	param: id c; type reference to array of 4 signed int
+> 	param: id d; type reference to function prototype
+> 	<parameter list is null>
+> 		returning double
+> 	param: id e; type reference to function prototype
+> 	<parameter list is null>
+> 		returning <no qual> pointer to signed char
+> 		)		returning void
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = x
+^^^^^
+  T1L100_ok.s exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+2a3,23
+>  #    4
+>  #    5
+>  #    6
+>  #    7
+>  #    8
+>  #    9
+>  #   10
+>  #   11
+>  #   12
+>  #   13
+>  #   14
+>  #   15
+>  #   16
+>  #   17
+>  #   18
+>  #   19
+>  #   20
+>  #   21
+>  #   22
+>  #   23
+>  #   24
+^^^^^
+Running pcc3 with input T1L100_err.c ... nonzero termination status
+  T1L100_err.err exists
+  Comparing with solution file ... Comparing error messages:
+-----Yours:-----
+Starting parse
+Entering state 0
+Reading a token: Next token is token VOID ()
+Shifting token VOID ()
+Entering state 18
+Reducing stack by rule 99 (line 259):
+   $1 = token VOID ()
+-> $$ = nterm type_specifier ()
+Stack now 0
+Entering state 28
+Reading a token: Next token is token IDENTIFIER ()
+Reducing stack by rule 85 (line 217):
+   $1 = nterm type_specifier ()
+line 1: ERROR -- type_spec bucket
+-> $$ = nterm declaration_specifiers ()
+Stack now 0
+Entering state 26
+Next token is token IDENTIFIER ()
+Shifting token IDENTIFIER ()
+Entering state 1
+Reducing stack by rule 208 (line 502):
+   $1 = token IDENTIFIER ()
+line 1: ERROR -- Found id: a
+-> $$ = nterm identifier ()
+Stack now 0 26
+Entering state 39
+Reducing stack by rule 139 (line 343):
+   $1 = nterm identifier ()
+line 1: ERROR -- Make id node
+line 1: ERROR -- Node id: a
+-> $$ = nterm direct_declarator ()
+Stack now 0 26
+Entering state 34
+Reading a token: Next token is token '(' ()
+Shifting token '(' ()
+Entering state 57
+Reading a token: Next token is token ')' ()
+Shifting token ')' ()
+Entering state 134
+Reducing stack by rule 144 (line 357):
+   $1 = nterm direct_declarator ()
+   $2 = token '(' ()
+   $3 = token ')' ()
+-> $$ = nterm direct_declarator ()
+Stack now 0 26
+Entering state 34
+Reading a token: Next token is token ';' ()
+Reducing stack by rule 137 (line 337):
+   $1 = nterm direct_declarator ()
+line 1: ERROR -- direct_declarator
+-> $$ = nterm declarator ()
+Stack now 0 26
+Entering state 49
+Next token is token ';' ()
+line 1: ERROR -- syntax error (column 9)
+Error: popping nterm declarator ()
+Stack now 0 26
+Error: popping nterm declaration_specifiers ()
+Stack now 0
+Cleanup: discarding lookahead token ';' ()
+Stack now 0
+-----Mine:------
+line 24: ERROR -- duplicate parameter declaration for `a'
+line 25: ERROR -- no id in parameter list
+line 26: ERROR -- duplicate declaration for a
+line 26: ERROR -- duplicate definition of `a'
+================
+
+
+LEVEL 110:
+
+Running pcc3 with input T1L110_ok.c ... nonzero termination status
+  T1L110_ok.err exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+1,49c1,154
+< Starting parse
+< Entering state 0
+< Reading a token: Next token is token INT ()
+< Shifting token INT ()
+< Entering state 10
+< Reducing stack by rule 102 (line 262):
+<    $1 = token INT ()
+< line 5: ERROR -- Found int
+< -> $$ = nterm type_specifier ()
+< Stack now 0
+< Entering state 28
+< Reading a token: Next token is token IDENTIFIER ()
+< Reducing stack by rule 85 (line 217):
+<    $1 = nterm type_specifier ()
+< line 5: ERROR -- type_spec bucket
+< -> $$ = nterm declaration_specifiers ()
+< Stack now 0
+< Entering state 26
+< Next token is token IDENTIFIER ()
+< Shifting token IDENTIFIER ()
+< Entering state 1
+< Reducing stack by rule 208 (line 502):
+<    $1 = token IDENTIFIER ()
+< line 5: ERROR -- Found id: i
+< -> $$ = nterm identifier ()
+< Stack now 0 26
+< Entering state 39
+< Reducing stack by rule 139 (line 343):
+<    $1 = nterm identifier ()
+< line 5: ERROR -- Make id node
+< line 5: ERROR -- Node id: i
+< -> $$ = nterm direct_declarator ()
+< Stack now 0 26
+< Entering state 34
+< Reading a token: Next token is token '=' ()
+< Reducing stack by rule 137 (line 337):
+<    $1 = nterm direct_declarator ()
+< line 5: ERROR -- direct_declarator
+< -> $$ = nterm declarator ()
+< Stack now 0 26
+< Entering state 49
+< Next token is token '=' ()
+< line 5: ERROR -- syntax error (column 7)
+< Error: popping nterm declarator ()
+< Stack now 0 26
+< Error: popping nterm declaration_specifiers ()
+< Stack now 0
+< Cleanup: discarding lookahead token '=' ()
+< Stack now 0
+---
+> 
+> 
+>         Dump: Id  = c
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = signed char
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = d
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = i
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = p
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = x
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = float
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = icai
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 10 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = pp
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = <no qual> pointer to <no qual> pointer to signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = ad
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 4 double
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = ai
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 10 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = ax
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 5 float
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = mdai
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 3 array of 5 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = mdai2
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 3 array of 5 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = mdai3
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 3 array of 5 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+> 
+> 
+>         Dump: Id  = mdai4
+> 
+>         Dump: VAR Stack. 
+>             Dump: block num =0
+> 	GDECL
+> 		type = array of 2 array of 4 array of 3 array of 5 signed int
+> 		storage class = <no storage class>
+> 		reference parameter = FALSE
+> 		error = FALSE
+^^^^^
+  T1L110_ok.s exists
+  Comparing with solution file ... FILES DIFFER:
+vvvvv
+4a5,209
+> 				# b_global_decl (i, alignment = 4, size = 4)
+> .globl i
+> 	.data
+> 	.align	4
+> 	.type	i, @object
+> 	.size	i, 4
+> i:
+> 	.long	19
+>  #    6
+> 				# b_global_decl (x, alignment = 4, size = 4)
+> .globl x
+> 	.align	4
+> 	.type	x, @object
+> 	.size	x, 4
+> x:
+> 	.long	1100580127
+>  #    7
+> 				# b_global_decl (d, alignment = 8, size = 8)
+> .globl d
+> 	.align	8
+> 	.type	d, @object
+> 	.size	d, 8
+> d:
+> 	.long	-1889785610
+> 	.long	1077228994
+>  #    8
+> 				# b_global_decl (c, alignment = 1, size = 1)
+> .globl c
+> 	.align	1
+> 	.type	c, @object
+> 	.size	c, 1
+> c:
+> 	.byte	0
+>  #    9
+> 				# b_global_decl (p, alignment = 4, size = 4)
+> .globl p
+> 	.align	4
+> 	.type	p, @object
+> 	.size	p, 4
+> p:
+> 	.long	0
+>  #   10
+> 				# b_global_decl (pp, alignment = 4, size = 4)
+> .globl pp
+> 	.align	4
+> 	.type	pp, @object
+> 	.size	pp, 4
+> pp:
+> 	.long	0
+>  #   11
+>  #   12
+>  #   13
+>  #   14
+> 				# b_global_decl (ai, alignment = 4, size = 40)
+> .globl ai
+> 	.align	4
+> 	.type	ai, @object
+> 	.size	ai, 40
+> ai:
+> 	.long	0
+> 	.long	1
+> 	.long	2
+> 	.long	3
+> 	.long	4
+> 	.long	5
+> 	.long	6
+> 	.long	7
+> 	.long	8
+> 	.long	9
+>  #   15
+>  #   16
+> 				# b_global_decl (ax, alignment = 4, size = 20)
+> .globl ax
+> 	.align	4
+> 	.type	ax, @object
+> 	.size	ax, 20
+> ax:
+> 	.long	1066192077
+> 	.long	1067030938
+> 	.long	1075000115
+> 	.long	1068708659
+> 	.long	1069547520
+>  #   17
+>  #   18
+> 				# b_global_decl (ad, alignment = 8, size = 32)
+> .globl ad
+> 	.align	8
+> 	.type	ad, @object
+> 	.size	ad, 32
+> ad:
+> 	.long	1717986918
+> 	.long	1074423398
+> 	.long	-1717986918
+> 	.long	1074895257
+> 	.long	0
+> 	.long	1075183616
+> 	.long	1717986918
+> 	.long	1075471974
+>  #   19
+>  #   20
+>  #   21
+>  #   22
+> 				# b_global_decl (icai, alignment = 4, size = 40)
+> .globl icai
+> 	.align	4
+> 	.type	icai, @object
+> 	.size	icai, 40
+> icai:
+> 	.long	5
+> 	.long	5
+> 	.long	5
+> 	.long	5
+> 	.long	5
+> 	.zero	20
+>  #   23
+>  #   24
+>  #   25
+>  #   26
+> 				# b_global_decl (mdai, alignment = 4, size = 60)
+> .globl mdai
+> 	.align	4
+> 	.type	mdai, @object
+> 	.size	mdai, 60
+> mdai:
+> 	.long	0
+> 	.long	1
+> 	.long	2
+> 	.long	3
+> 	.long	4
+> 	.long	6
+> 	.long	7
+> 	.long	8
+> 	.long	9
+> 	.long	10
+> 	.long	11
+> 	.long	12
+> 	.long	13
+> 	.long	14
+> 	.long	15
+>  #   27
+>  #   28
+> 				# b_global_decl (mdai2, alignment = 4, size = 60)
+> .globl mdai2
+> 	.align	4
+> 	.type	mdai2, @object
+> 	.size	mdai2, 60
+> mdai2:
+> 	.long	0
+> 	.long	1
+> 	.long	2
+> 	.zero	8
+> 	.long	6
+> 	.long	7
+> 	.long	8
+> 	.long	9
+> 	.long	10
+> 	.long	12
+> 	.long	13
+> 	.long	14
+> 	.long	15
+> 	.zero	4
+>  #   29
+>  #   30
+> 				# b_global_decl (mdai3, alignment = 4, size = 60)
+> .globl mdai3
+> 	.align	4
+> 	.type	mdai3, @object
+> 	.size	mdai3, 60
+> mdai3:
+> 	.long	0
+> 	.long	1
+> 	.zero	12
+> 	.long	5
+> 	.long	6
+> 	.long	7
+> 	.zero	8
+> 	.zero	20
+>  #   31
+>  #   32
+> 				# b_global_decl (mdai4, alignment = 4, size = 480)
+> .globl mdai4
+> 	.align	4
+> 	.type	mdai4, @object
+> 	.size	mdai4, 480
+> mdai4:
+> 	.long	1
+> 	.long	2
+> 	.long	3
+> 	.zero	8
+> 	.long	4
+> 	.long	5
+> 	.zero	12
+> 	.zero	20
+> 	.long	6
+> 	.zero	16
+> 	.zero	40
+> 	.long	7
+> 	.zero	16
+> 	.long	8
+> 	.long	9
+> 	.zero	12
+> 	.zero	20
+> 	.zero	60
+> 	.zero	240
+>  #   33
+^^^^^
+Running pcc3 with input T1L110_err.c ... nonzero termination status
+  T1L110_err.err exists
+  Comparing with solution file ... Comparing error messages:
+-----Yours:-----
+Starting parse
+Entering state 0
+Reading a token: Next token is token INT ()
+Shifting token INT ()
+Entering state 10
+Reducing stack by rule 102 (line 262):
+   $1 = token INT ()
+line 4: ERROR -- Found int
+-> $$ = nterm type_specifier ()
+Stack now 0
+Entering state 28
+Reading a token: Next token is token IDENTIFIER ()
+Reducing stack by rule 85 (line 217):
+   $1 = nterm type_specifier ()
+line 4: ERROR -- type_spec bucket
+-> $$ = nterm declaration_specifiers ()
+Stack now 0
+Entering state 26
+Next token is token IDENTIFIER ()
+Shifting token IDENTIFIER ()
+Entering state 1
+Reducing stack by rule 208 (line 502):
+   $1 = token IDENTIFIER ()
+line 4: ERROR -- Found id: i
+-> $$ = nterm identifier ()
+Stack now 0 26
+Entering state 39
+Reducing stack by rule 139 (line 343):
+   $1 = nterm identifier ()
+line 4: ERROR -- Make id node
+line 4: ERROR -- Node id: i
+-> $$ = nterm direct_declarator ()
+Stack now 0 26
+Entering state 34
+Reading a token: Next token is token '=' ()
+Reducing stack by rule 137 (line 337):
+   $1 = nterm direct_declarator ()
+line 4: ERROR -- direct_declarator
+-> $$ = nterm declarator ()
+Stack now 0 26
+Entering state 49
+Next token is token '=' ()
+line 4: ERROR -- syntax error (column 7)
+Error: popping nterm declarator ()
+Stack now 0 26
+Error: popping nterm declaration_specifiers ()
+Stack now 0
+Cleanup: discarding lookahead token '=' ()
+Stack now 0
+-----Mine:------
+line 31: ERROR -- too many items in initializer
+line 33: ERROR -- type mismatch in initializer
+line 35: ERROR -- initializer list for non-array type
+line 37: ERROR -- too many items in initializer
+line 39: ERROR -- too many items in initializer
+================
+######################################################
+Summary for self-test:
+  T1L80_err:  error message(s) (will check appropriateness by hand)
+  T1L80_ok:  2 PROBLEM(S) FOUND
+  T1L90_err:  error message(s) (will check appropriateness by hand)
+  T1L90_ok:  2 PROBLEM(S) FOUND
+  T1L100_ok:  2 PROBLEM(S) FOUND
+  T1L100_err:  error message(s) (will check appropriateness by hand)
+  T1L110_ok:  2 PROBLEM(S) FOUND
+  T1L110_err:  error message(s) (will check appropriateness by hand)
+  pcc3:  ok
+######################################################
+ 80% level: (supplied by hand)
+ 90% level: (supplied by hand)
+100% level: (supplied by hand)
