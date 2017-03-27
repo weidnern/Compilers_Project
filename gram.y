@@ -214,7 +214,25 @@ init_declarator_list
 	;
 
 init_declarator
-	: declarator		
+	: declarator	{/*Alloc STDR, try to install, backend*/
+						ST_ID id = get_id($<y_tnode>1); //new method in tree
+						char * id_str = st_get_id_str(id);
+						TYPE t = get_type($<y_type>0, $<y_tnode>1);
+						ST_DR rec = stdr_alloc();
+						rec->tag = GDECL;
+						rec->u.decl.type = t;
+						if (!st_install(id, rec)) {
+							error("Duplicate declaration for %s.", id_str);
+							stdr_free(rec);
+				  		}
+				  		else {
+				  			//find size and alignment
+				  			unsigned int size = get_size(t);
+				  			unsigned int alignment = get_alignment(t);
+							b_global_decl(id_str, alignment, size);
+							b_skip(size);
+				  		}
+					  	}	
 	| declarator '=' initializer
 	;
 
@@ -302,33 +320,22 @@ type_qualifier
 
 declarator
 	: direct_declarator
-	| pointer declarator	{$<y_type>$ = ty_build_ptr($<y_type>0, NO_QUAL);}
+	| pointer declarator	{//TYPE t = ty_build_ptr($<y_type>0, NO_QUAL);
+							$<y_tnode>$ = new_node($<y_tnode>2, PNTRTN);}
 	;
 
 direct_declarator
-	: identifier		{/*Alloc STDR, try to install, backend*/
-						ST_ID id = $<y_id>1;
-						char * id_str = st_get_id_str(id);
-						TYPE t = $<y_type>0;
-						ST_DR rec = stdr_alloc();
-						rec->tag = GDECL;
-						rec->u.decl.type = t;
-						if (!st_install(id, rec)) {
-							error("Duplicate declaration for %s.", id_str);
-							stdr_free(rec);
-				  		}
-				  		else {
-				  			//find size and alignment
-				  			unsigned int size = get_size(t);
-				  			unsigned int alignment = get_alignment(t);
-							b_global_decl(id_str, alignment, size);
-							b_skip(size);
-				  		}
+	: identifier		{TNODE n = new_node(NULL, IDTN);
+						n->u.id = $<y_id>1;
+						$<y_tnode>$ = n;
 					  	}
-	| '(' declarator ')'	{$<y_type>$ = $<y_type>2;}
+	| '(' declarator ')'	{$<y_tnode>$ = $<y_tnode>2;}
 	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
 	| direct_declarator '[' constant_expr ']'	{
-			$<y_type>$ = ty_build_array($<y_type>0, DIM_PRESENT, $<y_int>3);}
+			//TYPE t = ty_build_array($<y_type>0, DIM_PRESENT, $<y_int>3);
+			TNODE n = new_node($<y_tnode>1, ARRAYTN);
+			n->u.arr_size = $<y_int>1;
+			$<y_tnode>$ = n;}
 	| direct_declarator '(' parameter_type_list ')'
 	| direct_declarator '(' ')'
 	;
