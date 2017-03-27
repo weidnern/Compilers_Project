@@ -40,3 +40,42 @@ TNODE pop_node(TNODE tn)
 	free(temp);
 	return tn;
 }
+
+ST_ID get_id(TNODE tn)
+{
+	TNODE node = tn;
+	while(node->next != NULL)
+	{
+		node = node->next;
+	}
+	return node->u.id;
+}
+
+TYPE get_type(TYPE t, TNODE tn)
+{
+	TYPE ret = t;
+	TNODE node = tn;
+
+	while(node->next != NULL)
+	{
+		switch(node->type)
+		{
+			case PNTRTN:
+				ret = ty_build_ptr(ret, NO_QUAL);
+				break;
+
+			case ARRAYTN:
+				ret = ty_build_array(ret, DIM_PRESENT, node->u.arr_size);
+				break;
+
+			case FUNCTN:
+				ret = ty_build_func(ret, OLDSTYLE,node->u.plist);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	return ret;
+}

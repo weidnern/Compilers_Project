@@ -30,5 +30,7 @@ typedef struct tnode {
 TNODE new_node(TNODE tn, TNODE_TYPE type);
 TNODE push_node(TNODE tn, TNODE next);
 TNODE pop_node(TNODE tn);
+ST_ID get_id(TNODE tn);
+TYPE get_type(TYPE t, TNODE tn);
 
 #endif
