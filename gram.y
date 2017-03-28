@@ -211,7 +211,7 @@ declaration_specifiers
 
 init_declarator_list
 	: init_declarator
-	| init_declarator_list ',' init_declarator
+	| init_declarator_list ',' { $<y_type>$ = $<y_type>0; } init_declarator
 	;
 
 init_declarator
