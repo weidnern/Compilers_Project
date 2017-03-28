@@ -41,6 +41,7 @@ unsigned int get_size(TYPE t)
 		ret = 4;
 	}
 	else {
+		error("not array or ptr. Tag: %d", tag);
 		ret = get_size_basic(tag);
 	}
 	

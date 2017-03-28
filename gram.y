@@ -196,43 +196,40 @@ expr_opt
   *******************************/
 
 declaration
-	: declaration_specifiers {error("decl_specs done");}';' {error("No identifier listed.\n");}
-	| declaration_specifiers make_basic_type init_declarator_list ';'	
-		/*{ 
-		  
- 		}*/
-	; 
-
-make_basic_type
-	: /* empty */		{ $<y_type>$ = build_base($<y_bucket>0); }
+	: declaration_specifiers ';' {error("No identifier listed.\n");}
+	| declaration_specifiers init_declarator_list ';'
 	;
-	
-	/*| declaration_specifiers	{error("Beginning decl_spec");
-								$<y_type>$ = build_base($<y_bucket>1);
-								error("Ending decl_spec");} init_declarator_list ';'*/
 
 declaration_specifiers
 	: storage_class_specifier
 	| storage_class_specifier declaration_specifiers
-	| type_specifier {error("type_spec bucket"); $<y_bucket>$ = update_bucket(NULL, $<y_type_spec>1, NULL);}
+	| type_specifier {$<y_bucket>$ = update_bucket(NULL, $<y_type_spec>1, NULL);}
 	| type_specifier declaration_specifiers { $<y_bucket>$ = update_bucket($<y_bucket>2, $<y_type_spec>1, NULL);}
 	| type_qualifier
 	| type_qualifier declaration_specifiers
 	;
 
 init_declarator_list
-	: init_declarator	{ $<y_type>$ = $<y_type>0; }
-	| init_declarator_list ',' { $<y_type>$ = $<y_type>0; } init_declarator
+	: init_declarator
+	| init_declarator_list ',' init_declarator
 	;
 
 init_declarator
 	: declarator	{/*Alloc STDR, try to install, backend*/
 						error("In declarator");
+						print_bucket($<y_bucket>0);
+						TYPE decl_specs = build_base($<y_bucket>0);
+						error("built base");
 						ST_ID id = get_id($1); //new method in tree
+						error("got id");
 						char * id_str = st_get_id_str(id);
 						error("Print id: %s", id_str);
-						TYPE t = get_type($<y_type>0, $1);
+						error("$0 type tag: %d", ty_query(decl_specs));
+						TYPE t = get_type(decl_specs, $1);
+						TYPETAG tag = ty_query(t);
+						error("found type. tag: %d", tag);
 						ST_DR rec = stdr_alloc();
+						//error("allocated st_dr rec");
 						rec->tag = GDECL;
 						rec->u.decl.type = t;
 						if (!st_install(id, rec)) {
@@ -240,11 +237,15 @@ init_declarator
 							stdr_free(rec);
 				  		}
 				  		else {
+				  			//error("installed rec");
 				  			//find size and alignment
 				  			unsigned int size = get_size(t);
+				  			error("found size");
 				  			unsigned int alignment = get_alignment(t);
+				  			error("found alignment");
 							b_global_decl(id_str, alignment, size);
 							b_skip(size);
+							error("backend calls");
 				  		}
 				  		$<y_type>$ = t;
 					  	}	
@@ -259,7 +260,7 @@ type_specifier
 	: VOID 
 	| CHAR 		{/*for 80%*/ $<y_type_spec>$ = CHAR_SPEC; }
 	| SHORT 	{/*for 90%*/ $<y_type_spec>$ = SHORT_SPEC;}
-	| INT 		{/*for 80%*/ error("Found int"); $<y_type_spec>$ = INT_SPEC; }
+	| INT 		{/*for 80%*/ $<y_type_spec>$ = INT_SPEC; }
 	| LONG		{/*for 90%*/ $<y_type_spec>$ = LONG_SPEC;}
 	
 	| FLOAT 	{/*for 80%*/ $<y_type_spec>$ = FLOAT_SPEC;}
@@ -334,22 +335,19 @@ type_qualifier
 	;
 
 declarator
-	: direct_declarator		{error("direct_declarator"); $$ = $1;}
-	| pointer declarator	{//TYPE t = ty_build_ptr($<y_type>0, NO_QUAL);
-							$$ = new_node($2, PNTRTN);}
+	: direct_declarator		{$$ = $1;}
+	| pointer declarator	{$$ = new_node($2, PNTRTN);}
 	;
 
 direct_declarator
-	: identifier		{error("Make id node");
-						TNODE n = new_node(NULL, IDTN);
+	: identifier		{TNODE n = new_node(NULL, IDTN);
 						n->u.id = $1;
-						$$ = n;
-						error("Node id: %s", st_get_id_str(n->u.id));
-					  	}
+						error("id node: %s", st_get_id_str($1));
+						$$ = n;}
 	| '(' declarator ')'	{$$ = $2;}
 	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
 	| direct_declarator '[' constant_expr ']'	{
-			//TYPE t = ty_build_array($<y_type>0, DIM_PRESENT, $<y_int>3);
+			error("Array found");
 			TNODE n = new_node($1, ARRAYTN);
 			n->u.arr_size = $<y_int>3;
 			$$ = n;}
@@ -500,7 +498,6 @@ function_definition
 
 identifier
 	: IDENTIFIER	{/*enroll the ID into the sym table*/
-					error("Found id: %s", $1);
 					$$ = st_enter_id($1);}
 	;
 %%

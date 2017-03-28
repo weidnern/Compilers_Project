@@ -1468,6 +1468,7 @@ static void add_storage_list(object,tag)
 		    {
 		    storage_list_ptr[storage_ptr] = object;
 		    storage_ptr++;
+		    error("storage_ptr = %d", storage_ptr);
 		    }
 		else
 		  fatal("overflow in storage list ptr \"add_storage_list\"\n");

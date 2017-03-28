@@ -75,6 +75,7 @@ TYPE get_type(TYPE t, TNODE tn)
 			default:
 				break;
 		}
+		node = node->next;
 	}
 
 	return ret;

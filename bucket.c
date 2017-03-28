@@ -313,6 +313,8 @@ TYPE build_base (BUCKET_PTR bucket)
     {
     TYPE type;
 
+	error("spec def: %x", bucket);
+
 	if ((bucket->spec_def & BASE_MASK) == 0)
 	    bucket->spec_def |= INT_MASK;
 
