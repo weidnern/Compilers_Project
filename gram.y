@@ -353,7 +353,11 @@ direct_declarator
 			n->u.arr_size = $<y_int>3;
 			$$ = n;}
 	| direct_declarator '(' parameter_type_list ')'
-	| direct_declarator '(' ')'
+	| direct_declarator '(' ')'	{
+			//error("We a function");
+			TNODE n = new_node($1, FUNCTN);
+			n->u.plist = NULL;
+			$$ = n;}
 	;
 
 pointer

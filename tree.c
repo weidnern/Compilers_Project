@@ -69,7 +69,7 @@ TYPE get_type(TYPE t, TNODE tn)
 				break;
 
 			case FUNCTN:
-				ret = ty_build_func(ret, OLDSTYLE,node->u.plist);
+				ret = ty_build_func(ret, PROTOTYPE,node->u.plist); //Used PROTOTYPE instead of OLDSTYLE
 				break;
 
 			default:
