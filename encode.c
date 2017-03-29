@@ -22,6 +22,7 @@ unsigned int get_size(TYPE t)
 		unsigned int tmp = dim;
 		if(ta_tag == TYFUNC) {
 			error("Cannot have array of functions.");
+			return -1; //could cause errors later
 		}
 		while(ta_tag == TYARRAY)
 		{	
@@ -69,6 +70,7 @@ unsigned int get_alignment(TYPE t)
 		unsigned int tmp = dim;
 		if(ta_tag == TYFUNC) {
 			error("Cannot have array of functions.");
+			return -1; //could cause errors later
 		}
 		while(ta_tag == TYARRAY)
 		{	

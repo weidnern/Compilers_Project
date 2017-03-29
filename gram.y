@@ -29,6 +29,7 @@
 	TNODE y_tnode;
 	TYPE y_type;
 	TYPE_SPECIFIER y_type_spec;
+	PARAM_LIST y_param_list;
 	};
 
 %type <y_id> identifier
@@ -237,6 +238,14 @@ init_declarator
 							error("Duplicate declaration for %s.", id_str);
 							stdr_free(rec);
 				  		}
+				  		else if(tag == TYFUNC) {
+				  			//error("installed rec");
+				  			//find size and alignment
+				  			unsigned int size = get_size(t);
+				  			//error("found size");
+			  				unsigned int alignment = get_alignment(t);
+				  			//error("found alignment");
+				  		}
 				  		else {
 				  			//error("installed rec");
 				  			//find size and alignment
@@ -258,7 +267,7 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID 
+	: VOID 		{/*for 100%*/ $<y_type_spec>$ = VOID_SPEC; }
 	| CHAR 		{/*for 80%*/ $<y_type_spec>$ = CHAR_SPEC; }
 	| SHORT 	{/*for 90%*/ $<y_type_spec>$ = SHORT_SPEC;}
 	| INT 		{/*for 80%*/ $<y_type_spec>$ = INT_SPEC; }
@@ -352,7 +361,11 @@ direct_declarator
 			TNODE n = new_node($1, ARRAYTN);
 			n->u.arr_size = $<y_int>3;
 			$$ = n;}
-	| direct_declarator '(' parameter_type_list ')'
+	| direct_declarator '(' parameter_type_list ')' {
+			TNODE n = new_node($1, FUNCTN);
+			n->u.plist = $<y_param_list>3;
+			$$ = n;
+			}
 	| direct_declarator '(' ')'	{
 			//error("We a function");
 			TNODE n = new_node($1, FUNCTN);
@@ -366,17 +379,32 @@ pointer
 	;
 
 parameter_type_list
-	: parameter_list
+	: parameter_list		{$<y_param_list>$ = $<y_param_list>1;}
 	| parameter_list ',' ELIPSIS
 	;
 
 parameter_list
-	: parameter_declaration
-	| parameter_list ',' parameter_declaration
+	: parameter_declaration 	{$<y_param_list>1->next = NULL;
+			$<y_param_list>1->prev = $<y_param_list>0;
+			$<y_param_list>$ = $<y_param_list>1;}
+	| parameter_list ',' parameter_declaration {$<y_param_list>3->next = NULL;
+			$<y_param_list>3->prev = $<y_param_list>1;
+			$<y_param_list>$ = $<y_param_list>1;}
 	;
 
 parameter_declaration
-	: declaration_specifiers declarator
+	: declaration_specifiers declarator {error("Making type"); PARAM_LIST p;
+			error("Getting id");
+			p->id = get_id($2);
+			error("Getting Type");
+			p->type = get_type(build_base($<y_bucket>1),$2);
+			error("Got type");
+			p->sc = NO_SC;
+			p->err = FALSE;
+			p->is_ref = FALSE;
+			error("Filled parameter");
+			$<y_param_list>$ = p;
+			}
 	| declaration_specifiers
 	| declaration_specifiers abstract_declarator
 	;
