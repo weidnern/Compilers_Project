@@ -374,7 +374,7 @@ direct_declarator
 	;
 
 pointer
-	: '*' specifier_qualifier_list_opt
+	: '*' specifier_qualifier_list_opt 
         | '&'
 	;
 
@@ -394,6 +394,7 @@ parameter_list
 
 parameter_declaration
 	: declaration_specifiers declarator {error("Making type"); PARAM_LIST p;
+			p = (PARAM_LIST)malloc(sizeof(PARAM));
 			error("Getting id");
 			p->id = get_id($2);
 			error("Getting Type");
@@ -405,8 +406,20 @@ parameter_declaration
 			error("Filled parameter");
 			$<y_param_list>$ = p;
 			}
-	| declaration_specifiers
-	| declaration_specifiers abstract_declarator
+	| declaration_specifiers {error("No id in parameter list");}
+	| declaration_specifiers abstract_declarator {PARAM_LIST p;
+			p = (PARAM_LIST)malloc(sizeof(PARAM));
+			
+			/*p->id = get_id($2);
+			error("YES WE GOT HERE");
+			p->type = get_type(build_base($<y_bucket>1),$2);
+			p->sc = NO_SC;
+			p->err = FALSE;
+			if(FALSE)
+				p->is_ref = TRUE;
+			else
+				p->is_ref = FALSE;
+			$<p_param_list>$ = p;*/}
 	;
 
 type_name

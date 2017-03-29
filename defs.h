@@ -37,6 +37,6 @@ typedef void * ST_ID;	/* symbol table identifier abstraction */
 /* #define PASCAL_LANG */
 
 /* Remove comments to generate a parser trace: */
-#define YYDEBUG 1
+/*#define YYDEBUG 1*/
 
 #endif
