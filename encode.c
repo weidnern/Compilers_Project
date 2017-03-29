@@ -40,8 +40,15 @@ unsigned int get_size(TYPE t)
 	else if(tag == TYPTR) {
 		ret = 4;
 	}
+	else if(tag == TYFUNC) {
+		PARAMSTYLE paramstyle;
+		PARAM_LIST params;
+		TYPE ta = ty_query_func(t, &paramstyle, &params);
+		TYPETAG ta_tag = ty_query(ta);
+		if(ta_tag == TYFUNC) error("Cannot have function returning function.");
+		if(ta_tag == TYARRAY) error("Cannot have function returning array.");
+	}
 	else {
-		error("not array or ptr. Tag: %d", tag);
 		ret = get_size_basic(tag);
 	}
 	
@@ -79,6 +86,14 @@ unsigned int get_alignment(TYPE t)
 	}
 	else if(tag == TYPTR) {
 		ret = 4;
+	}
+	else if(tag == TYFUNC) {
+		PARAMSTYLE paramstyle;
+		PARAM_LIST params;
+		TYPE ta = ty_query_func(t, &paramstyle, &params);
+		TYPETAG ta_tag = ty_query(ta);
+		if(ta_tag == TYFUNC) error("Cannot have function returning function.");
+		if(ta_tag == TYARRAY) error("Cannot have function returning array.");
 	}
 	else {
 		ret = get_size_basic(tag);

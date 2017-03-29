@@ -196,7 +196,7 @@ expr_opt
   *******************************/
 
 declaration
-	: declaration_specifiers ';' {error("No identifier listed.\n");}
+	: declaration_specifiers ';' {error("No declarator listed in declaration.");}
 	| declaration_specifiers init_declarator_list ';'
 	;
 
@@ -216,22 +216,23 @@ init_declarator_list
 
 init_declarator
 	: declarator	{/*Alloc STDR, try to install, backend*/
-						error("In declarator");
-						print_bucket($<y_bucket>0);
+						//error("In declarator");
+						//print_bucket($<y_bucket>0);
 						TYPE decl_specs = build_base($<y_bucket>0);
-						error("built base");
+						//error("built base");
 						ST_ID id = get_id($1); //new method in tree
-						error("got id");
+						//error("got id");
 						char * id_str = st_get_id_str(id);
-						error("Print id: %s", id_str);
-						error("$0 type tag: %d", ty_query(decl_specs));
+						//error("Print id: %s", id_str);
+						//error("$0 type tag: %d", ty_query(decl_specs));
 						TYPE t = get_type(decl_specs, $1);
 						TYPETAG tag = ty_query(t);
-						error("found type. tag: %d", tag);
+						//error("found type. tag: %d", tag);
 						ST_DR rec = stdr_alloc();
 						//error("allocated st_dr rec");
 						rec->tag = GDECL;
 						rec->u.decl.type = t;
+						rec->u.decl.sc=NO_SC;
 						if (!st_install(id, rec)) {
 							error("Duplicate declaration for %s.", id_str);
 							stdr_free(rec);
@@ -240,12 +241,12 @@ init_declarator
 				  			//error("installed rec");
 				  			//find size and alignment
 				  			unsigned int size = get_size(t);
-				  			error("found size");
+				  			//error("found size");
 				  			unsigned int alignment = get_alignment(t);
-				  			error("found alignment");
+				  			//error("found alignment");
 							b_global_decl(id_str, alignment, size);
 							b_skip(size);
-							error("backend calls");
+							//error("backend calls");
 				  		}
 				  		$<y_type>$ = t;
 					  	}	
@@ -342,12 +343,12 @@ declarator
 direct_declarator
 	: identifier		{TNODE n = new_node(NULL, IDTN);
 						n->u.id = $1;
-						error("id node: %s", st_get_id_str($1));
+						//error("id node: %s", st_get_id_str($1));
 						$$ = n;}
 	| '(' declarator ')'	{$$ = $2;}
 	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
 	| direct_declarator '[' constant_expr ']'	{
-			error("Array found");
+			//error("Array found");
 			TNODE n = new_node($1, ARRAYTN);
 			n->u.arr_size = $<y_int>3;
 			$$ = n;}
