@@ -349,18 +349,18 @@ direct_declarator
 	| '(' declarator ')'	{$$ = $2;}
 	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
 	| direct_declarator '[' constant_expr ']'	{
-			TNODE n = new_node($1, ARRAYTN);
-			n->u.arr_size = $<y_int>3;
-			$$ = n;}
+												TNODE n = new_node($1, ARRAYTN);
+												n->u.arr_size = $<y_int>3;
+												$$ = n;}
 	| direct_declarator '(' parameter_type_list ')' {
-			TNODE n = new_node($1, FUNCTN);
-			n->u.plist = $<y_param_list>3;
-			$$ = n;
-			}
+													TNODE n = new_node($1, FUNCTN);
+													n->u.plist = $<y_param_list>3;
+													$$ = n;
+													}
 	| direct_declarator '(' ')'	{
-			TNODE n = new_node($1, FUNCTN);
-			n->u.plist = NULL;
-			$$ = n;}
+								TNODE n = new_node($1, FUNCTN);
+								n->u.plist = NULL;
+								$$ = n;}
 	;
 
 pointer
@@ -376,8 +376,27 @@ parameter_type_list
 parameter_list
 	: parameter_declaration 	{ $<y_param_list>$ = $<y_param_list>1;}
 	| parameter_list ',' parameter_declaration {
-			$<y_param_list>3->prev = $<y_param_list>1;
-			$<y_param_list>1->next = $<y_param_list>3;
+			if($<y_param_list>1->next == NULL)
+			{
+				//error("next is null");
+				$<y_param_list>3->prev = $<y_param_list>1;
+				$<y_param_list>1->next = $<y_param_list>3;
+			}
+			else
+			{
+				//error("next is not null");
+				PARAM_LIST p = $<y_param_list>1->next;
+				while(p->next != NULL)
+				{
+					//error("while != NULL");
+					p = p->next;
+					//error("next");
+				}
+				$<y_param_list>3->prev = p;
+				//error("assigned prev");
+				p->next = $<y_param_list>3;
+				//error("assigned next");
+			}
 			$<y_param_list>$ = $<y_param_list>1;}
 	;
 
@@ -394,7 +413,7 @@ parameter_declaration
 			p->err = FALSE;
 			p->is_ref = is_reference($2);
 			//error("Filled parameter");
-			p->next = NULL;
+			//p->next = NULL;
 			$<y_param_list>$ = p;
 			}
 	| declaration_specifiers {error("No id in parameter list");}
