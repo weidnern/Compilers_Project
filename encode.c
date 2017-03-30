@@ -7,6 +7,9 @@
 #include "encode.h"
 #include "types.h"
 #include "message.h"
+#include "defs.h"
+#include "string.h"
+#include "symtab.h"
 
 unsigned int get_size(TYPE t)
 {
@@ -103,3 +106,27 @@ unsigned int get_alignment(TYPE t)
 	
 	return ret;
 }
+
+BOOLEAN duplication_in_param_list(PARAM_LIST list, PARAM_LIST node)
+{
+	PARAM_LIST p = list;
+	PARAM_LIST n = node;
+	while(p->next != NULL)
+	{
+		char * p_id = st_get_id_str(p->id);
+		char * n_id = st_get_id_str(n->id);
+		if(strcmp(p_id, n_id) == 0)
+		{
+			error("Duplicate parameter declaration for %s", p_id);
+			return TRUE;
+		}
+		p = p->next;
+	}
+	return FALSE;
+}
+
+
+
+
+
+

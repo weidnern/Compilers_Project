@@ -36,9 +36,14 @@
 %type <y_id> identifier
 %type <y_tnode> declarator direct_declarator
 %type <y_bool> pointer
+%type <y_param_list> parameter_type_list parameter_list parameter_declaration
+%type <y_bucket> declaration_specifiers
+%type <y_type_spec> type_specifier
+%type <y_type> init_declarator
+%type <y_int> constant_expr
 
 %token <y_string> IDENTIFIER STRING_LITERAL
-%token <y_int> INT_CONSTANT
+%token <y_int> INT_CONSTANT 
 %token <y_double> DOUBLE_CONSTANT
 %token SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
@@ -204,12 +209,12 @@ declaration
 	;
 
 declaration_specifiers
-	: storage_class_specifier
-	| storage_class_specifier declaration_specifiers
-	| type_specifier {$<y_bucket>$ = update_bucket(NULL, $<y_type_spec>1, NULL);}
-	| type_specifier declaration_specifiers { $<y_bucket>$ = update_bucket($<y_bucket>2, $<y_type_spec>1, NULL);}
-	| type_qualifier
-	| type_qualifier declaration_specifiers
+	: storage_class_specifier {}
+	| storage_class_specifier declaration_specifiers {}
+	| type_specifier {$$ = update_bucket(NULL, $1, NULL);}
+	| type_specifier declaration_specifiers { $$ = update_bucket($2, $1, NULL);}
+	| type_qualifier {}
+	| type_qualifier declaration_specifiers {}
 	;
 
 init_declarator_list
@@ -244,9 +249,9 @@ init_declarator
 							b_global_decl(id_str, alignment, size);
 							b_skip(size);
 				  		}
-				  		$<y_type>$ = t;
+				  		$$ = t;
 					  	}	
-	| declarator '=' initializer
+	| declarator '=' initializer {}
 	;
 
 storage_class_specifier
@@ -254,20 +259,20 @@ storage_class_specifier
 	;
 
 type_specifier
-	: VOID 		{/*for 100%*/ $<y_type_spec>$ = VOID_SPEC; }
-	| CHAR 		{/*for 80%*/ $<y_type_spec>$ = CHAR_SPEC; }
-	| SHORT 	{/*for 90%*/ $<y_type_spec>$ = SHORT_SPEC;}
-	| INT 		{/*for 80%*/ $<y_type_spec>$ = INT_SPEC; }
-	| LONG		{/*for 90%*/ $<y_type_spec>$ = LONG_SPEC;}
+	: VOID 		{/*for 100%*/ $$ = VOID_SPEC; }
+	| CHAR 		{/*for 80%*/ $$ = CHAR_SPEC; }
+	| SHORT 	{/*for 90%*/ $$ = SHORT_SPEC;}
+	| INT 		{/*for 80%*/ $$ = INT_SPEC; }
+	| LONG		{/*for 90%*/ $$ = LONG_SPEC;}
 	
-	| FLOAT 	{/*for 80%*/ $<y_type_spec>$ = FLOAT_SPEC;}
-	| DOUBLE 	{/*for 80%*/ $<y_type_spec>$ = DOUBLE_SPEC;}
-	| SIGNED 	{/*for 90%*/ $<y_type_spec>$ = SIGNED_SPEC;}
-	| UNSIGNED	{/*for 90%*/ $<y_type_spec>$ = UNSIGNED_SPEC;}
+	| FLOAT 	{/*for 80%*/ $$ = FLOAT_SPEC;}
+	| DOUBLE 	{/*for 80%*/ $$ = DOUBLE_SPEC;}
+	| SIGNED 	{/*for 90%*/ $$ = SIGNED_SPEC;}
+	| UNSIGNED	{/*for 90%*/ $$ = UNSIGNED_SPEC;}
 	
-	| struct_or_union_specifier
-	| enum_specifier
-	| TYPE_NAME
+	| struct_or_union_specifier {}
+	| enum_specifier {}
+	| TYPE_NAME {}
 	;
 
 struct_or_union_specifier
@@ -350,11 +355,11 @@ direct_declarator
 	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
 	| direct_declarator '[' constant_expr ']'	{
 												TNODE n = new_node($1, ARRAYTN);
-												n->u.arr_size = $<y_int>3;
+												n->u.arr_size = $3;
 												$$ = n;}
 	| direct_declarator '(' parameter_type_list ')' {
 													TNODE n = new_node($1, FUNCTN);
-													n->u.plist = $<y_param_list>3;
+													n->u.plist = $3;
 													$$ = n;
 													}
 	| direct_declarator '(' ')'	{
@@ -369,52 +374,42 @@ pointer
 	;
 
 parameter_type_list
-	: parameter_list		{$<y_param_list>$ = $<y_param_list>1;}
+	: parameter_list		{$$ = $1;}
 	| parameter_list ',' ELIPSIS
 	;
 
 parameter_list
-	: parameter_declaration 	{ $<y_param_list>$ = $<y_param_list>1;}
+	: parameter_declaration 	{ $$ = $1;}
 	| parameter_list ',' parameter_declaration {
-			if($<y_param_list>1->next == NULL)
+			BOOLEAN duplicate = duplication_in_param_list($1, $3);
+			if($1->next == NULL)
 			{
-				//error("next is null");
-				$<y_param_list>3->prev = $<y_param_list>1;
-				$<y_param_list>1->next = $<y_param_list>3;
+				$3->prev = $1;
+				$1->next = $3;
 			}
 			else
 			{
-				//error("next is not null");
-				PARAM_LIST p = $<y_param_list>1->next;
+				PARAM_LIST p = $1->next;
 				while(p->next != NULL)
 				{
-					//error("while != NULL");
 					p = p->next;
-					//error("next");
 				}
-				$<y_param_list>3->prev = p;
-				//error("assigned prev");
-				p->next = $<y_param_list>3;
-				//error("assigned next");
+				$3->prev = p;
+				p->next = $3;
 			}
-			$<y_param_list>$ = $<y_param_list>1;}
+			$$ = $1;}
 	;
 
 parameter_declaration
-	: declaration_specifiers declarator {//error("Making type"); 
+	: declaration_specifiers declarator { 
 			PARAM_LIST p;
 			p = (PARAM_LIST)malloc(sizeof(PARAM));
-			//error("Getting id");
 			p->id = get_id($2);
-			//error("Getting Type");
-			p->type = get_type(build_base($<y_bucket>1),$2);
-			//error("Got type");
+			p->type = get_type(build_base($1),$2);
 			p->sc = NO_SC;
 			p->err = FALSE;
 			p->is_ref = is_reference($2);
-			//error("Filled parameter");
-			//p->next = NULL;
-			$<y_param_list>$ = p;
+			$$ = p;
 			}
 	| declaration_specifiers {error("No id in parameter list");}
 	| declaration_specifiers abstract_declarator {}

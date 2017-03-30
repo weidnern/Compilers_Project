@@ -51,7 +51,7 @@ main.o: main.c defs.h types.h symtab.h tree.h
 
 types.o: types.c types.h symtab.h message.h
 
-encode.o: encode.c encode.h types.h
+encode.o: encode.c encode.h types.h message.h defs.h symtab.h
 
 tree.o: tree.c tree.h defs.h types.h symtab.h message.h
 
