@@ -30,10 +30,12 @@
 	TYPE y_type;
 	TYPE_SPECIFIER y_type_spec;
 	PARAM_LIST y_param_list;
+	BOOLEAN y_bool;
 	};
 
 %type <y_id> identifier
 %type <y_tnode> declarator direct_declarator
+%type <y_bool> pointer
 
 %token <y_string> IDENTIFIER STRING_LITERAL
 %token <y_int> INT_CONSTANT
@@ -217,20 +219,12 @@ init_declarator_list
 
 init_declarator
 	: declarator	{/*Alloc STDR, try to install, backend*/
-						//error("In declarator");
-						//print_bucket($<y_bucket>0);
 						TYPE decl_specs = build_base($<y_bucket>0);
-						//error("built base");
 						ST_ID id = get_id($1); //new method in tree
-						//error("got id");
 						char * id_str = st_get_id_str(id);
-						//error("Print id: %s", id_str);
-						//error("$0 type tag: %d", ty_query(decl_specs));
 						TYPE t = get_type(decl_specs, $1);
 						TYPETAG tag = ty_query(t);
-						//error("found type. tag: %d", tag);
 						ST_DR rec = stdr_alloc();
-						//error("allocated st_dr rec");
 						rec->tag = GDECL;
 						rec->u.decl.type = t;
 						rec->u.decl.sc=NO_SC;
@@ -239,23 +233,16 @@ init_declarator
 							stdr_free(rec);
 				  		}
 				  		else if(tag == TYFUNC) {
-				  			//error("installed rec");
 				  			//find size and alignment
 				  			unsigned int size = get_size(t);
-				  			//error("found size");
 			  				unsigned int alignment = get_alignment(t);
-				  			//error("found alignment");
 				  		}
 				  		else {
-				  			//error("installed rec");
 				  			//find size and alignment
 				  			unsigned int size = get_size(t);
-				  			//error("found size");
 				  			unsigned int alignment = get_alignment(t);
-				  			//error("found alignment");
 							b_global_decl(id_str, alignment, size);
 							b_skip(size);
-							//error("backend calls");
 				  		}
 				  		$<y_type>$ = t;
 					  	}	
@@ -346,18 +333,24 @@ type_qualifier
 
 declarator
 	: direct_declarator		{$$ = $1;}
-	| pointer declarator	{$$ = new_node($2, PNTRTN);}
+	| pointer declarator	{if($1){
+								$$ = new_node($2, REFTN);
+								error("reference node");
+							}
+							else{
+								$$ = new_node($2, PNTRTN);
+								error("pointer node");
+							}
+							}
 	;
 
 direct_declarator
 	: identifier		{TNODE n = new_node(NULL, IDTN);
 						n->u.id = $1;
-						//error("id node: %s", st_get_id_str($1));
 						$$ = n;}
 	| '(' declarator ')'	{$$ = $2;}
 	| direct_declarator '[' ']'	{warning("No array dimensions included.\n");}
 	| direct_declarator '[' constant_expr ']'	{
-			//error("Array found");
 			TNODE n = new_node($1, ARRAYTN);
 			n->u.arr_size = $<y_int>3;
 			$$ = n;}
@@ -367,15 +360,14 @@ direct_declarator
 			$$ = n;
 			}
 	| direct_declarator '(' ')'	{
-			//error("We a function");
 			TNODE n = new_node($1, FUNCTN);
 			n->u.plist = NULL;
 			$$ = n;}
 	;
 
 pointer
-	: '*' specifier_qualifier_list_opt 
-        | '&'
+	: '*' specifier_qualifier_list_opt {$$ = FALSE;}
+        | '&'	{$$ = TRUE;}
 	;
 
 parameter_type_list
@@ -393,21 +385,23 @@ parameter_list
 	;
 
 parameter_declaration
-	: declaration_specifiers declarator {error("Making type"); PARAM_LIST p;
+	: declaration_specifiers declarator {//error("Making type"); 
+			PARAM_LIST p;
 			p = (PARAM_LIST)malloc(sizeof(PARAM));
-			error("Getting id");
+			//error("Getting id");
 			p->id = get_id($2);
-			error("Getting Type");
+			//error("Getting Type");
 			p->type = get_type(build_base($<y_bucket>1),$2);
-			error("Got type");
+			//error("Got type");
 			p->sc = NO_SC;
 			p->err = FALSE;
-			p->is_ref = FALSE;
-			error("Filled parameter");
+			p->is_ref = is_reference($2);
+			//error("Filled parameter");
 			$<y_param_list>$ = p;
 			}
 	| declaration_specifiers {error("No id in parameter list");}
-	| declaration_specifiers abstract_declarator {PARAM_LIST p;
+	| declaration_specifiers abstract_declarator {error("do we need this?");
+			PARAM_LIST p;
 			p = (PARAM_LIST)malloc(sizeof(PARAM));
 			
 			/*p->id = get_id($2);

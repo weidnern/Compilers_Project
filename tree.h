@@ -11,7 +11,7 @@
 
 //enum of types that could be nodes in the tree
 typedef enum{
-	IDTN, PNTRTN, ARRAYTN, FUNCTN
+	IDTN, PNTRTN, ARRAYTN, FUNCTN, REFTN
 } TNODE_TYPE;
 
 //tree node struct
@@ -32,5 +32,6 @@ TNODE push_node(TNODE tn, TNODE next);
 TNODE pop_node(TNODE tn);
 ST_ID get_id(TNODE tn);
 TYPE get_type(TYPE t, TNODE tn);
+BOOLEAN is_reference(TNODE tn);
 
 #endif

@@ -77,6 +77,21 @@ TYPE get_type(TYPE t, TNODE tn)
 		}
 		node = node->next;
 	}
-
 	return ret;
+}
+
+BOOLEAN is_reference(TNODE tn)
+{
+	TNODE node = tn;
+	while(node->next != NULL)
+	{
+		if(node->type == REFTN)
+		{
+			error("reference is true");
+			return TRUE;
+		}
+		node = node->next;
+	}
+	error("reference is false");
+	return FALSE;
 }
