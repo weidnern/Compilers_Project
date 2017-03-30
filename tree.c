@@ -87,11 +87,9 @@ BOOLEAN is_reference(TNODE tn)
 	{
 		if(node->type == REFTN)
 		{
-			error("reference is true");
 			return TRUE;
 		}
 		node = node->next;
 	}
-	error("reference is false");
 	return FALSE;
 }

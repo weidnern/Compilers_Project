@@ -335,11 +335,9 @@ declarator
 	: direct_declarator		{$$ = $1;}
 	| pointer declarator	{if($1){
 								$$ = new_node($2, REFTN);
-								error("reference node");
 							}
 							else{
 								$$ = new_node($2, PNTRTN);
-								error("pointer node");
 							}
 							}
 	;
@@ -376,11 +374,10 @@ parameter_type_list
 	;
 
 parameter_list
-	: parameter_declaration 	{$<y_param_list>1->next = NULL;
-			$<y_param_list>1->prev = $<y_param_list>0;
-			$<y_param_list>$ = $<y_param_list>1;}
-	| parameter_list ',' parameter_declaration {$<y_param_list>3->next = NULL;
+	: parameter_declaration 	{ $<y_param_list>$ = $<y_param_list>1;}
+	| parameter_list ',' parameter_declaration {
 			$<y_param_list>3->prev = $<y_param_list>1;
+			$<y_param_list>1->next = $<y_param_list>3;
 			$<y_param_list>$ = $<y_param_list>1;}
 	;
 
@@ -397,23 +394,11 @@ parameter_declaration
 			p->err = FALSE;
 			p->is_ref = is_reference($2);
 			//error("Filled parameter");
+			p->next = NULL;
 			$<y_param_list>$ = p;
 			}
 	| declaration_specifiers {error("No id in parameter list");}
-	| declaration_specifiers abstract_declarator {error("do we need this?");
-			PARAM_LIST p;
-			p = (PARAM_LIST)malloc(sizeof(PARAM));
-			
-			/*p->id = get_id($2);
-			error("YES WE GOT HERE");
-			p->type = get_type(build_base($<y_bucket>1),$2);
-			p->sc = NO_SC;
-			p->err = FALSE;
-			if(FALSE)
-				p->is_ref = TRUE;
-			else
-				p->is_ref = FALSE;
-			$<p_param_list>$ = p;*/}
+	| declaration_specifiers abstract_declarator {}
 	;
 
 type_name
