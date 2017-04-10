@@ -104,7 +104,9 @@ unary_expr
 	;
 
 unary_operator
-	: '&' | '*' | '+' | '-' | '~' | '!'
+	: '&' | '*' | '+' 
+	| '-' /*for 80%*/
+	| '~' | '!'
 	;
 
 cast_expr
@@ -114,35 +116,35 @@ cast_expr
 
 multiplicative_expr
 	: cast_expr
-	| multiplicative_expr '*' cast_expr
-	| multiplicative_expr '/' cast_expr
+	| multiplicative_expr '*' cast_expr /*for 80%*/
+	| multiplicative_expr '/' cast_expr /*for 80%*/
 	| multiplicative_expr '%' cast_expr
 	;
 
 additive_expr
 	: multiplicative_expr
-	| additive_expr '+' multiplicative_expr
-	| additive_expr '-' multiplicative_expr
+	| additive_expr '+' multiplicative_expr /*for 80%*/
+	| additive_expr '-' multiplicative_expr /*for 80%*/
 	;
 
 shift_expr
 	: additive_expr
-	| shift_expr LEFT_OP additive_expr
-	| shift_expr RIGHT_OP additive_expr
+	| shift_expr LEFT_OP additive_expr /**<<*/
+	| shift_expr RIGHT_OP additive_expr /*>>*/
 	;
 
 relational_expr
 	: shift_expr
-	| relational_expr '<' shift_expr
-	| relational_expr '>' shift_expr
-	| relational_expr LE_OP shift_expr
-	| relational_expr GE_OP shift_expr
+	| relational_expr '<' shift_expr /*for 80%*/
+	| relational_expr '>' shift_expr /*for 80%*/
+	| relational_expr LE_OP shift_expr /*for 80%  <=*/
+	| relational_expr GE_OP shift_expr /*for 80%  >=*/
 	;
 
 equality_expr
 	: relational_expr
-	| equality_expr EQ_OP relational_expr
-	| equality_expr NE_OP relational_expr
+	| equality_expr EQ_OP relational_expr /*for 80%  ==*/
+	| equality_expr NE_OP relational_expr /*for 80%  !=*/
 	;
 
 and_expr
@@ -181,7 +183,8 @@ assignment_expr
 	;
 
 assignment_operator
-	: '=' | MUL_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | ADD_ASSIGN | SUB_ASSIGN
+	: '=' /*for 80%*/ 
+	| MUL_ASSIGN | DIV_ASSIGN | MOD_ASSIGN | ADD_ASSIGN | SUB_ASSIGN
 	| LEFT_ASSIGN | RIGHT_ASSIGN | AND_ASSIGN | XOR_ASSIGN | OR_ASSIGN
 	;
 
@@ -195,7 +198,7 @@ constant_expr
 	;
 
 expr_opt
-	: /* null derive */
+	: /* null derive */ {$$ = NULL;}
 	| expr
 	;
 
@@ -527,8 +530,10 @@ external_declaration
 	;
 
 function_definition
-	: declarator compound_statement
-	| declaration_specifiers declarator compound_statement
+	: declarator compound_statement /*default return type is int*/
+	| declaration_specifiers declarator 
+	{/*intermediate action, enter*/} 
+	compound_statement {/*finish, exit*/}
 	;
 
  /*******************************
