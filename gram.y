@@ -31,6 +31,7 @@
 	TYPE_SPECIFIER y_type_spec;
 	PARAM_LIST y_param_list;
 	BOOLEAN y_bool;
+	ENODE y_enode;
 	};
 
 %type <y_id> identifier
@@ -41,6 +42,7 @@
 %type <y_type_spec> type_specifier
 %type <y_type> init_declarator
 %type <y_int> constant_expr
+%type <y_enode> expr_opt expr unary_expr assignment_expr
 
 %token <y_string> IDENTIFIER STRING_LITERAL
 %token <y_int> INT_CONSTANT 
@@ -95,12 +97,12 @@ argument_expr_list
 	;
 
 unary_expr
-	: postfix_expr
-	| INC_OP unary_expr
-	| DEC_OP unary_expr
-	| unary_operator cast_expr
-	| SIZEOF unary_expr
-	| SIZEOF '(' type_name ')'
+	: postfix_expr {}
+	| INC_OP unary_expr {}
+	| DEC_OP unary_expr {}
+	| unary_operator cast_expr {}
+	| SIZEOF unary_expr {}
+	| SIZEOF '(' type_name ')' {}
 	;
 
 unary_operator
@@ -178,8 +180,14 @@ conditional_expr
 	;
 
 assignment_expr
-	: conditional_expr
-	| unary_expr assignment_operator assignment_expr
+	: conditional_expr {}
+	| unary_expr assignment_operator assignment_expr 
+	{/*assop->left = unary_expr
+		assop->right = assignment_expr*/
+		ENODE e = new_assop_node(ASSOP, EQUALS);
+		e->left = $1;
+		e->right = $3;
+	}
 	;
 
 assignment_operator
@@ -463,7 +471,7 @@ initializer_list
 statement
 	: labeled_statement
 	| compound_statement
-	| expression_statement
+	| expression_statement /*Go here*/
 	| selection_statement
 	| iteration_statement
 	| jump_statement
@@ -476,7 +484,7 @@ labeled_statement
 	;
 
 compound_statement
-	: '{' '}'
+	: '{' '}' 
 	| '{' statement_list '}'
 	| '{' declaration_list '}'
 	| '{' declaration_list statement_list '}'
@@ -530,10 +538,34 @@ external_declaration
 	;
 
 function_definition
-	: declarator compound_statement /*default return type is int*/
+	: declarator {/*Alloc STDR, try to install, backend, default return type is int*/
+						ST_ID id = get_id($1);
+						char * id_str = st_get_id_str(id);
+						
+						func_install(ty_build_basic(TYSIGNEDINT), id);
+				  		
+				  		st_enter_block();
+			  			b_func_prologue(id_str);
+				  }
+	
+	compound_statement	{
+			  				b_func_epilogue(st_get_id_str(get_id($1)));
+			  				st_exit_block();
+						}
 	| declaration_specifiers declarator 
-	{/*intermediate action, enter*/} 
-	compound_statement {/*finish, exit*/}
+	{/*Alloc STDR, try to install, backend*/
+		TYPE decl_specs = build_base($1);
+		ST_ID id = get_id($2);
+		
+		func_install(decl_specs, id);
+  		
+  		st_enter_block();
+		b_func_prologue(st_get_id_str(id));
+	} 
+	compound_statement {/*finish, exit*/
+						b_func_epilogue(st_get_id_str(get_id($2)));
+			  			st_exit_block();
+			  		   }
 	;
 
  /*******************************

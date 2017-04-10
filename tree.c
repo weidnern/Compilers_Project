@@ -96,7 +96,7 @@ BOOLEAN is_reference(TNODE tn)
 
 //EXPRESSIONS
 
-ENODE new_assop_node(ENODE en, EXPR_TYPE type, ASSOP_TYPE assop)
+ENODE new_assop_node(EXPR_TYPE type, ASSOP_TYPE assop)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
@@ -104,7 +104,9 @@ ENODE new_assop_node(ENODE en, EXPR_TYPE type, ASSOP_TYPE assop)
 		return NULL;
 	new_node->type = type;
 	new_node->u_expr.assop = assop;
-	new_node->next = en;
+	//new_node->next = en;
+	//new_node->left = enl;
+	//new_node->right = enr;
 	return new_node;
 }
 

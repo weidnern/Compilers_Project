@@ -29,7 +29,7 @@ typedef enum {
 } BINOP_TYPE;
 
 typedef enum {
-	MINUS;
+	UMINUS
 } UNOP_TYPE;
 
 typedef enum {
@@ -37,7 +37,7 @@ typedef enum {
 } COMP_TYPE;
 
 typedef enum {
-	INT, CHAR, FLOAT, DOUBLE
+	GINT, GCHAR, GFLOAT, GDOUBLE
 } GLOBALV_TYPE;
 
 //tree node struct
@@ -61,8 +61,8 @@ typedef struct enode {
 		COMP_TYPE comp;
 		GLOBALV_TYPE globalv;
 	} u_expr;
-	//struct enode *left;
-	//struct enode *right;
+	struct enode *left;
+	struct enode *right;
 	struct enode *next;
 } EXPRESSION_NODE, *ENODE;
 
@@ -73,5 +73,12 @@ TNODE pop_node(TNODE tn);
 ST_ID get_id(TNODE tn);
 TYPE get_type(TYPE t, TNODE tn);
 BOOLEAN is_reference(TNODE tn);
+
+//EXPRESSIONS
+ENODE new_assop_node(EXPR_TYPE type, ASSOP_TYPE assop);
+ENODE new_binop_node(ENODE en, EXPR_TYPE type, BINOP_TYPE binop);
+ENODE new_unop_node(ENODE en, EXPR_TYPE type, UNOP_TYPE unop);
+ENODE new_comp_node(ENODE en, EXPR_TYPE type, COMP_TYPE comp);
+ENODE new_globalv_node(ENODE en, EXPR_TYPE type, GLOBALV_TYPE globalv);
 
 #endif

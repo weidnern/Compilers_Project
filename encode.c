@@ -125,6 +125,30 @@ BOOLEAN duplication_in_param_list(PARAM_LIST list, PARAM_LIST node)
 	return FALSE;
 }
 
+void func_install(TYPE t, ST_ID id)
+{
+	int block;
+	ST_DR look_up = st_lookup(id, &block);
+	if(look_up == NULL){
+		ST_DR rec = stdr_alloc();
+		rec->tag = FDECL;
+		rec->u.decl.type = t;
+		rec->u.decl.sc=NO_SC;
+		if (!st_install(id, rec)) {
+			error("Duplicate declaration for function %s.", st_get_id_str(id));
+			stdr_free(rec);
+  		}
+	}
+	else{
+		if(look_up->tag == GDECL && look_up->u.decl.type == t) {
+			look_up->tag = FDECL;
+		}
+		else {
+			error("Not function or wrong return type %s.", st_get_id_str(id));
+		}
+	}
+}
+
 
 
 

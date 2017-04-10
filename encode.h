@@ -14,5 +14,6 @@
 unsigned int get_size(TYPE t);
 unsigned int get_alignment(TYPE t);
 BOOLEAN duplication_in_param_list(PARAM_LIST list, PARAM_LIST node);
+void func_install(TYPE t, ST_ID id);
 
 #endif
