@@ -14,6 +14,32 @@ typedef enum{
 	IDTN, PNTRTN, ARRAYTN, FUNCTN, REFTN
 } TNODE_TYPE;
 
+//enum if exrepssion types
+typedef enum{
+	ASSOP, BINOP, UNOP, INTCONST, FPCONST, COMP, GLOBALV, PAREN, FCALL
+} EXPR_TYPE;
+
+//enums of specific expression
+typedef enum {
+	EQUALS
+} ASSOP_TYPE;
+
+typedef enum {
+	PLUS, MINUS, TIMES, DIVIDE
+} BINOP_TYPE;
+
+typedef enum {
+	MINUS;
+} UNOP_TYPE;
+
+typedef enum {
+	DOUBLE_EQUALS, LESS_THAN, GREATER_THAN, NOT_EQUAL, LESS_THAN_EQUAL, GREATER_THAN_EQUAL
+} COMP_TYPE;
+
+typedef enum {
+	INT, CHAR, FLOAT, DOUBLE
+} GLOBALV_TYPE;
+
 //tree node struct
 typedef struct tnode {
 	TNODE_TYPE type;
@@ -25,6 +51,20 @@ typedef struct tnode {
 	} u;
 	struct tnode *next; //points to next tnode in list
 } TREE_NODE, *TNODE;
+
+typedef struct enode {
+	EXPR_TYPE type;
+	union {
+		ASSOP_TYPE assop;
+		BINOP_TYPE binop;
+		UNOP_TYPE unop;
+		COMP_TYPE comp;
+		GLOBALV_TYPE globalv;
+	} u_expr;
+	//struct enode *left;
+	//struct enode *right;
+	struct enode *next;
+} EXPRESSION_NODE, *ENODE;
 
 
 TNODE new_node(TNODE tn, TNODE_TYPE type);

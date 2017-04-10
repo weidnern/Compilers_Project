@@ -93,3 +93,66 @@ BOOLEAN is_reference(TNODE tn)
 	}
 	return FALSE;
 }
+
+//EXPRESSIONS
+
+ENODE new_assop_node(ENODE en, EXPR_TYPE type, ASSOP_TYPE assop)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = type;
+	new_node->u_expr.assop = assop;
+	new_node->next = en;
+	return new_node;
+}
+
+ENODE new_binop_node(ENODE en, EXPR_TYPE type, BINOP_TYPE binop)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = type;
+	new_node->u_expr.binop = binop;
+	new_node->next = en;
+	return new_node;
+}
+
+ENODE new_unop_node(ENODE en, EXPR_TYPE type, UNOP_TYPE unop)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = type;
+	new_node->u_expr.unop = unop;
+	new_node->next = en;
+	return new_node;
+}
+
+ENODE new_comp_node(ENODE en, EXPR_TYPE type, COMP_TYPE comp)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = type;
+	new_node->u_expr.comp = comp;
+	new_node->next = en;
+	return new_node;
+}
+
+ENODE new_globalv_node(ENODE en, EXPR_TYPE type, GLOBALV_TYPE globalv)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = type;
+	new_node->u_expr.globalv = globalv;
+	new_node->next = en;
+	return new_node;
+}
+
