@@ -110,7 +110,7 @@ ENODE new_assop_node(EXPR_TYPE type, ASSOP_TYPE assop)
 	return new_node;
 }
 
-ENODE new_binop_node(ENODE en, EXPR_TYPE type, BINOP_TYPE binop)
+ENODE new_binop_node(EXPR_TYPE type, BINOP_TYPE binop)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
@@ -118,11 +118,11 @@ ENODE new_binop_node(ENODE en, EXPR_TYPE type, BINOP_TYPE binop)
 		return NULL;
 	new_node->type = type;
 	new_node->u_expr.binop = binop;
-	new_node->next = en;
+	//new_node->next = en;
 	return new_node;
 }
 
-ENODE new_unop_node(ENODE en, EXPR_TYPE type, UNOP_TYPE unop)
+ENODE new_unop_node(EXPR_TYPE type, UNOP_TYPE unop)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
@@ -130,11 +130,11 @@ ENODE new_unop_node(ENODE en, EXPR_TYPE type, UNOP_TYPE unop)
 		return NULL;
 	new_node->type = type;
 	new_node->u_expr.unop = unop;
-	new_node->next = en;
+	//new_node->next = en;
 	return new_node;
 }
 
-ENODE new_comp_node(ENODE en, EXPR_TYPE type, COMP_TYPE comp)
+ENODE new_comp_node(EXPR_TYPE type, COMP_TYPE comp)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
@@ -142,11 +142,11 @@ ENODE new_comp_node(ENODE en, EXPR_TYPE type, COMP_TYPE comp)
 		return NULL;
 	new_node->type = type;
 	new_node->u_expr.comp = comp;
-	new_node->next = en;
+	//new_node->next = en;
 	return new_node;
 }
 
-ENODE new_globalv_node(ENODE en, EXPR_TYPE type, GLOBALV_TYPE globalv)
+ENODE new_globalv_node(EXPR_TYPE type, GLOBALV_TYPE globalv)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
@@ -154,7 +154,54 @@ ENODE new_globalv_node(ENODE en, EXPR_TYPE type, GLOBALV_TYPE globalv)
 		return NULL;
 	new_node->type = type;
 	new_node->u_expr.globalv = globalv;
-	new_node->next = en;
+	//new_node->next = en;
 	return new_node;
 }
 
+ENODE new_intconst_node(int con)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = INTCONST;
+	new_node->u_expr.id_is_func = FALSE;
+	return new_node;
+}
+
+ENODE new_fpconst_node(double con)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = FPCONST;
+	new_node->u_expr.id_is_func = FALSE;
+	return new_node;
+}
+
+ENODE new_id_node(ST_ID id)
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = ID;
+	int block;
+	ST_DR stdr = st_lookup(id, &block);
+	if(ty_query(stdr->u.decl.type) == TYFUNC)
+		new_node->u_expr.id_is_func = TRUE;
+	else
+		new_node->u_expr.id_is_func = FALSE;
+	return new_node;
+}
+
+ENODE new_func_node()
+{
+	ENODE new_node;
+	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
+	if(new_node == NULL)
+		return NULL;
+	new_node->type = PAREN;
+	return new_node;
+}

@@ -16,7 +16,7 @@ typedef enum{
 
 //enum if exrepssion types
 typedef enum{
-	ASSOP, BINOP, UNOP, INTCONST, FPCONST, COMP, GLOBALV, PAREN, FCALL
+	ASSOP, BINOP, UNOP, ID, INTCONST, FPCONST, COMP, GLOBALV, PAREN, FCALL
 } EXPR_TYPE;
 
 //enums of specific expression
@@ -60,6 +60,7 @@ typedef struct enode {
 		UNOP_TYPE unop;
 		COMP_TYPE comp;
 		GLOBALV_TYPE globalv;
+		BOOLEAN id_is_func;
 	} u_expr;
 	struct enode *left;
 	struct enode *right;
@@ -76,9 +77,13 @@ BOOLEAN is_reference(TNODE tn);
 
 //EXPRESSIONS
 ENODE new_assop_node(EXPR_TYPE type, ASSOP_TYPE assop);
-ENODE new_binop_node(ENODE en, EXPR_TYPE type, BINOP_TYPE binop);
-ENODE new_unop_node(ENODE en, EXPR_TYPE type, UNOP_TYPE unop);
-ENODE new_comp_node(ENODE en, EXPR_TYPE type, COMP_TYPE comp);
-ENODE new_globalv_node(ENODE en, EXPR_TYPE type, GLOBALV_TYPE globalv);
+ENODE new_binop_node(EXPR_TYPE type, BINOP_TYPE binop);
+ENODE new_unop_node(EXPR_TYPE type, UNOP_TYPE unop);
+ENODE new_comp_node(EXPR_TYPE type, COMP_TYPE comp);
+ENODE new_globalv_node(EXPR_TYPE type, GLOBALV_TYPE globalv);
+ENODE new_intconst_node(int con);
+ENODE new_fpconst_node (double con);
+ENODE new_id_node(ST_ID id);
+ENODE new_func_node();
 
 #endif
