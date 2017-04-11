@@ -96,64 +96,69 @@ BOOLEAN is_reference(TNODE tn)
 
 //EXPRESSIONS
 
-ENODE new_assop_node(EXPR_TYPE type, ASSOP_TYPE assop)
+ENODE new_assop_node(ASSOP_TYPE assop, ENODE left, ENODE right)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = type;
-	new_node->u_expr.assop = assop;
-	//new_node->next = en;
-	//new_node->left = enl;
-	//new_node->right = enr;
+	new_node->expr_type = ASSOP;
+	new_node->type = right->type;
+	new_node->u_expr.assop.op = assop;
+	new_node->u_expr.assop.left = left;
+	new_node->u_expr.assop.right = right;
 	return new_node;
 }
 
-ENODE new_binop_node(EXPR_TYPE type, BINOP_TYPE binop)
+ENODE new_binop_node(BINOP_TYPE binop, ENODE left, ENODE right)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = type;
-	new_node->u_expr.binop = binop;
-	//new_node->next = en;
+	new_node->expr_type = BINOP;
+	new_node->type = right->type;
+	new_node->u_expr.binop.op = binop;
+	new_node->u_expr.binop.left = left;
+	new_node->u_expr.binop.right = right;
 	return new_node;
 }
 
-ENODE new_unop_node(EXPR_TYPE type, UNOP_TYPE unop)
+ENODE new_unop_node(UNOP_TYPE unop, ENODE arg)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = type;
-	new_node->u_expr.unop = unop;
-	//new_node->next = en;
+	new_node->expr_type = UNOP;
+	new_node->type = arg->type;
+	new_node->u_expr.unop.op = unop;
+	new_node->u_expr.unop.arg = arg;
 	return new_node;
 }
 
-ENODE new_comp_node(EXPR_TYPE type, COMP_TYPE comp)
+ENODE new_comp_node(COMP_TYPE comp, ENODE left, ENODE right)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = type;
-	new_node->u_expr.comp = comp;
-	//new_node->next = en;
+	new_node->expr_type = COMP;
+	new_node->type = right->type;
+	new_node->u_expr.comp.op = comp;
+	new_node->u_expr.comp.left = left;
+	new_node->u_expr.comp.right = right;
 	return new_node;
 }
 
-ENODE new_globalv_node(EXPR_TYPE type, GLOBALV_TYPE globalv)
+ENODE new_globalv_node(GLOBALV_TYPE globalv)
 {
 	ENODE new_node;
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = type;
-	new_node->u_expr.globalv = globalv;
+	new_node->expr_type = GLOBALV;
+	//new_node->u_expr.globalv = globalv;
 	//new_node->next = en;
 	return new_node;
 }
@@ -164,8 +169,9 @@ ENODE new_intconst_node(int con)
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = INTCONST;
-	new_node->u_expr.id_is_func = FALSE;
+	new_node->expr_type = INTCONST;
+	new_node->type = ty_build_basic(TYSIGNEDINT);
+	new_node->u_expr.intval = con;
 	return new_node;
 }
 
@@ -175,24 +181,31 @@ ENODE new_fpconst_node(double con)
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = FPCONST;
-	new_node->u_expr.id_is_func = FALSE;
+	new_node->expr_type = FPCONST;
+	new_node->type = ty_build_basic(TYDOUBLE);
+	new_node->u_expr.doubleval = con;
 	return new_node;
 }
 
 ENODE new_id_node(ST_ID id)
 {
 	ENODE new_node;
-	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
-	if(new_node == NULL)
-		return NULL;
-	new_node->type = ID;
+	new_node = (ENODE) malloc(sizeof(EXPRESSION_NODE));
+	if (new_node == NULL)
+		fatal("No more dynamic memory!");
 	int block;
 	ST_DR stdr = st_lookup(id, &block);
-	if(ty_query(stdr->u.decl.type) == TYFUNC)
-		new_node->u_expr.id_is_func = TRUE;
+	if(stdr != NULL)
+	{
+		new_node->expr_type = ID;
+		new_node->type = stdr->u.decl.type;
+		new_node->u_expr.id = id;
+	}
 	else
-		new_node->u_expr.id_is_func = FALSE;
+	{
+		error("%s is undefined", st_get_id_str(id));
+		free(new_node);
+	}
 	return new_node;
 }
 
@@ -202,6 +215,6 @@ ENODE new_func_node()
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->type = PAREN;
+	new_node->expr_type = PAREN;
 	return new_node;
 }

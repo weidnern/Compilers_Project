@@ -53,18 +53,33 @@ typedef struct tnode {
 } TREE_NODE, *TNODE;
 
 typedef struct enode {
-	EXPR_TYPE type;
+	EXPR_TYPE expr_type;
+	TYPE type;
 	union {
-		ASSOP_TYPE assop;
-		BINOP_TYPE binop;
-		UNOP_TYPE unop;
-		COMP_TYPE comp;
-		GLOBALV_TYPE globalv;
-		BOOLEAN id_is_func;
+		long intval;
+		double doubleval;
+		ST_ID id;
+		struct {
+			UNOP_TYPE op;
+			struct enode * arg;
+		} unop;
+		struct {
+			BINOP_TYPE op;
+			struct enode *left, *right;
+		} binop;
+		struct {
+			struct enode * fname;
+			//EXPR_LIST actual_args;
+		} fcall;
+		struct {
+			ASSOP_TYPE op;
+			struct enode *left, *right;
+		} assop;
+		struct {
+			COMP_TYPE op;
+			struct enode *left, *right;
+		} comp;
 	} u_expr;
-	struct enode *left;
-	struct enode *right;
-	struct enode *next;
 } EXPRESSION_NODE, *ENODE;
 
 
@@ -76,11 +91,11 @@ TYPE get_type(TYPE t, TNODE tn);
 BOOLEAN is_reference(TNODE tn);
 
 //EXPRESSIONS
-ENODE new_assop_node(EXPR_TYPE type, ASSOP_TYPE assop);
-ENODE new_binop_node(EXPR_TYPE type, BINOP_TYPE binop);
-ENODE new_unop_node(EXPR_TYPE type, UNOP_TYPE unop);
-ENODE new_comp_node(EXPR_TYPE type, COMP_TYPE comp);
-ENODE new_globalv_node(EXPR_TYPE type, GLOBALV_TYPE globalv);
+ENODE new_assop_node(ASSOP_TYPE assop, ENODE left, ENODE right);
+ENODE new_binop_node(BINOP_TYPE binop, ENODE left, ENODE right);
+ENODE new_unop_node(UNOP_TYPE unop, ENODE arg);
+ENODE new_comp_node(COMP_TYPE comp, ENODE left, ENODE right);
+ENODE new_globalv_node(GLOBALV_TYPE globalv);
 ENODE new_intconst_node(int con);
 ENODE new_fpconst_node (double con);
 ENODE new_id_node(ST_ID id);

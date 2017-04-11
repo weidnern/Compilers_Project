@@ -73,27 +73,18 @@
   *******************************/
 
 primary_expr
-	: identifier		{ENODE e = new_id_node($1);
-						e->left = NULL;
-						e->right = NULL;
-						$$ = e;}
-	| INT_CONSTANT		{ENODE e = new_intconst_node($1);
-						e->left = NULL;
-						e->right = NULL;
-						$$ = e;}
-	| DOUBLE_CONSTANT	{ENODE e = new_fpconst_node($1);
-						e->left = NULL;
-						e->right = NULL;
-						$$ = e;}
+	: identifier		{$$ = new_id_node($1);}
+	| INT_CONSTANT		{$$ = new_intconst_node($1);}
+	| DOUBLE_CONSTANT	{$$ = new_fpconst_node($1);}
 	| STRING_LITERAL {}
-	| '(' expr ')' {}
+	| '(' expr ')' { $$ = $2; }
 	;
 
 postfix_expr
 	: primary_expr
 	| postfix_expr '[' expr ']'
 	| postfix_expr '(' argument_expr_list_opt ')' 
-		{if($1->u_expr.id_is_func)
+		/*{if($1->u_expr.id_is_func)
 		{
 			ENODE e = new_func_node();
 			e->next = $3;
@@ -101,7 +92,7 @@ postfix_expr
 			e->right = NULL;
 			$$ = e;
 		}
-		}
+		}*/
 	| postfix_expr '.' identifier
 	| postfix_expr PTR_OP identifier
 	| postfix_expr INC_OP
@@ -116,7 +107,7 @@ argument_expr_list_opt
 argument_expr_list
 	: assignment_expr
 	| argument_expr_list ',' assignment_expr
-		{if($1->next == NULL)
+		/*{if($1->next == NULL)
 			{
 				$1->next = $3;
 			}
@@ -130,17 +121,14 @@ argument_expr_list
 				p->next = $3;
 			}
 			$$ = $1;
-		}	
+		}*/	
 	;
 
 unary_expr
-	: postfix_expr {}
+	: postfix_expr 
 	| INC_OP unary_expr {}
 	| DEC_OP unary_expr {}
-	| unary_operator cast_expr {ENODE e = new_unop_node(UNOP, $1);
-								e->left = NULL;
-								e->right = $2;
-								$$ = e;}
+	| unary_operator cast_expr {$$ = new_unop_node($1, $2);}
 	| SIZEOF unary_expr {}
 	| SIZEOF '(' type_name ')' {}
 	;
@@ -161,27 +149,15 @@ cast_expr
 
 multiplicative_expr
 	: cast_expr
-	| multiplicative_expr '*' cast_expr {ENODE e = new_binop_node(BINOP, TIMES);
-										e->left = $1;
-										e->right = $3;
-										$$ = e;}/*for 80%*/
-	| multiplicative_expr '/' cast_expr {ENODE e = new_binop_node(BINOP, DIVIDE);
-										e->left = $1;
-										e->right = $3;
-										$$ = e;}/*for 80%*/
+	| multiplicative_expr '*' cast_expr {$$ = new_binop_node(TIMES, $1, $3);}/*for 80%*/
+	| multiplicative_expr '/' cast_expr {$$ = new_binop_node(DIVIDE, $1, $3);}/*for 80%*/
 	| multiplicative_expr '%' cast_expr
 	;
 
 additive_expr
 	: multiplicative_expr
-	| additive_expr '+' multiplicative_expr {ENODE e = new_binop_node(BINOP, PLUS);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%*/
-	| additive_expr '-' multiplicative_expr {ENODE e = new_binop_node(BINOP, MINUS);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%*/
+	| additive_expr '+' multiplicative_expr {$$ = new_binop_node(PLUS, $1, $3);}/*for 80%*/
+	| additive_expr '-' multiplicative_expr {$$ = new_binop_node(MINUS, $1, $3);}/*for 80%*/
 	;
 
 shift_expr
@@ -191,35 +167,17 @@ shift_expr
 	;
 
 relational_expr
-	: shift_expr {}
-	| relational_expr '<' shift_expr {ENODE e = new_comp_node(COMP, LESS_THAN);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%*/
-	| relational_expr '>' shift_expr {ENODE e = new_comp_node(COMP, GREATER_THAN);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%*/
-	| relational_expr LE_OP shift_expr {ENODE e = new_comp_node(COMP, LESS_THAN_EQUAL);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%  <=*/
-	| relational_expr GE_OP shift_expr {ENODE e = new_comp_node(COMP, GREATER_THAN_EQUAL);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%  >=*/
+	: shift_expr 
+	| relational_expr '<' shift_expr {$$ = new_comp_node(LESS_THAN, $1, $3);}/*for 80%*/
+	| relational_expr '>' shift_expr {$$ = new_comp_node(GREATER_THAN, $1, $3);}/*for 80%*/
+	| relational_expr LE_OP shift_expr {$$ = new_comp_node(LESS_THAN_EQUAL, $1, $3);}/*for 80%  <=*/
+	| relational_expr GE_OP shift_expr {$$ = new_comp_node(GREATER_THAN_EQUAL, $1, $3);}/*for 80%  >=*/
 	;
 
 equality_expr
 	: relational_expr
-	| equality_expr EQ_OP relational_expr {ENODE e = new_comp_node(COMP, DOUBLE_EQUALS);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%  ==*/
-	| equality_expr NE_OP relational_expr {ENODE e = new_comp_node(COMP, NOT_EQUAL);
-											e->left = $1;
-											e->right = $3;
-											$$ = e;}/*for 80%  !=*/
+	| equality_expr EQ_OP relational_expr {$$ = new_comp_node(DOUBLE_EQUALS, $1, $3);}/*for 80%  ==*/
+	| equality_expr NE_OP relational_expr {$$ = new_comp_node(NOT_EQUAL, $1, $3);}/*for 80%  !=*/
 	;
 
 and_expr
@@ -257,10 +215,7 @@ assignment_expr
 	| unary_expr assignment_operator assignment_expr 
 	{/*assop->left = unary_expr
 		assop->right = assignment_expr*/
-		ENODE e = new_assop_node(ASSOP, EQUALS);
-		e->left = $1;
-		e->right = $3;
-		$$ = e;
+		$$ = new_assop_node(EQUALS, $1, $3);
 	}
 	;
 
