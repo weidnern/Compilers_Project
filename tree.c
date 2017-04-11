@@ -204,17 +204,52 @@ ENODE new_id_node(ST_ID id)
 	else
 	{
 		error("%s is undefined", st_get_id_str(id));
-		free(new_node);
+		//free(new_node);
+		new_node->type = NULL;
 	}
 	return new_node;
 }
 
-ENODE new_func_node()
+ENODE new_func_node(ENODE name, EXPR_LIST args)
 {
+	ST_ID id;
 	ENODE new_node;
-	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
-	if(new_node == NULL)
-		return NULL;
-	new_node->expr_type = PAREN;
-	return new_node;
+	new_node = (ENODE) malloc(sizeof(EXPRESSION_NODE));
+	if (new_node == NULL)
+		fatal("No more dynamic memory!");
+	if(name->expr_type == ID)
+	{
+		id = name->u_expr.id;
+		int block;
+		ST_DR stdr = st_lookup(id, &block);
+		if(stdr != NULL)
+		{
+			new_node->expr_type = FCALL;
+			new_node->type = stdr->u.decl.type;
+			new_node->u_expr.fcall.fname = name;
+			new_node->u_expr.fcall.actual_args = args;
+			return new_node;
+		}
+		else
+		{
+			error("ID is not in symbol table");
+			free(new_node);
+			free(stdr);
+		}
+	}
+	else
+	{
+		error("Does not have an ID");
+		free(new_node);
+	}	
+}
+
+EXPR_LIST make_expr_list_node(ENODE expr, EXPR_LIST list)
+{
+	EXPR_LIST node = (EXPR_LIST) malloc(sizeof(EXPR_LIST_NODE));
+	node->expr = expr;
+	node->prev = list;
+	if(list != NULL) list->next = node;
+	else node->next = NULL;
+	return node;	
 }

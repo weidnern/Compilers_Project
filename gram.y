@@ -33,6 +33,7 @@
 	BOOLEAN y_bool;
 	ENODE y_enode;
 	UNOP_TYPE y_unop;
+	EXPR_LIST y_expr_list;
 	};
 
 %type <y_id> identifier
@@ -45,7 +46,8 @@
 %type <y_int> constant_expr
 %type <y_enode> expr_opt expr unary_expr assignment_expr cast_expr shift_expr
 %type <y_enode> primary_expr multiplicative_expr additive_expr relational_expr equality_expr
-%type <y_enode> postfix_expr argument_expr_list_opt argument_expr_list
+%type <y_enode> postfix_expr 
+%type <y_expr_list> argument_expr_list_opt argument_expr_list
 %type <y_unop> unary_operator
 
 %token <y_string> IDENTIFIER STRING_LITERAL
@@ -84,15 +86,18 @@ postfix_expr
 	: primary_expr
 	| postfix_expr '[' expr ']'
 	| postfix_expr '(' argument_expr_list_opt ')' 
-		/*{if($1->u_expr.id_is_func)
-		{
-			ENODE e = new_func_node();
-			e->next = $3;
-			e->left = $1;
-			e->right = NULL;
-			$$ = e;
+		{	
+			//error("OK");
+			if($1->type != NULL)
+			{
+				//error("now");
+				TYPETAG tag = ty_query($1->type);
+				//error("here");
+	  			if(tag == TYFUNC)
+	  				$$ = new_func_node($1, $3);
+	  		}
+	  		//error("did we make it here");
 		}
-		}*/
 	| postfix_expr '.' identifier
 	| postfix_expr PTR_OP identifier
 	| postfix_expr INC_OP
@@ -105,23 +110,8 @@ argument_expr_list_opt
 	;
 
 argument_expr_list
-	: assignment_expr
-	| argument_expr_list ',' assignment_expr
-		/*{if($1->next == NULL)
-			{
-				$1->next = $3;
-			}
-			else
-			{
-				ENODE p = $1->next;
-				while(p->next != NULL)
-				{
-					p = p->next;
-				}
-				p->next = $3;
-			}
-			$$ = $1;
-		}*/	
+	: assignment_expr {$$ = make_expr_list_node($1, NULL);}
+	| argument_expr_list ',' assignment_expr {$$ = make_expr_list_node($3, $1);}
 	;
 
 unary_expr
@@ -499,7 +489,7 @@ initializer_list
 
 statement
 	: labeled_statement
-	| compound_statement
+	| {st_enter_block();}compound_statement {st_exit_block();}
 	| expression_statement /*Go here*/
 	| selection_statement
 	| iteration_statement
@@ -530,7 +520,12 @@ statement_list
 	;
 
 expression_statement
-	: expr_opt ';'
+	: expr_opt ';'	{	if($1 != NULL)
+						{
+							evaluate($1);
+							b_pop();
+						}
+					}
 	;
 
 selection_statement

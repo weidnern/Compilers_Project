@@ -52,6 +52,11 @@ typedef struct tnode {
 	struct tnode *next; //points to next tnode in list
 } TREE_NODE, *TNODE;
 
+typedef struct expr_list_node {
+	struct enode *expr;
+	struct expr_list_node *next, *prev;
+} EXPR_LIST_NODE, *EXPR_LIST;
+
 typedef struct enode {
 	EXPR_TYPE expr_type;
 	TYPE type;
@@ -69,7 +74,7 @@ typedef struct enode {
 		} binop;
 		struct {
 			struct enode * fname;
-			//EXPR_LIST actual_args;
+			EXPR_LIST actual_args;
 		} fcall;
 		struct {
 			ASSOP_TYPE op;
@@ -99,6 +104,7 @@ ENODE new_globalv_node(GLOBALV_TYPE globalv);
 ENODE new_intconst_node(int con);
 ENODE new_fpconst_node (double con);
 ENODE new_id_node(ST_ID id);
-ENODE new_func_node();
+ENODE new_func_node(ENODE name, EXPR_LIST args);
+EXPR_LIST make_expr_list_node(ENODE expr, EXPR_LIST list);
 
 #endif
