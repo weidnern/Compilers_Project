@@ -94,7 +94,12 @@ postfix_expr
 				TYPETAG tag = ty_query($1->type);
 				//error("here");
 	  			if(tag == TYFUNC)
+	  			{
+	  				//error("is a function");
 	  				$$ = new_func_node($1, $3);
+	  			}
+	  			else
+	  				error("expression is not a function type");
 	  		}
 	  		//error("did we make it here");
 		}

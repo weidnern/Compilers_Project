@@ -145,6 +145,11 @@ void func_install(TYPE t, ST_ID id)
 		if(look_up->tag == GDECL) {
 			PARAM_LIST params;
 			BOOLEAN check_args;
+			if(ty_query(look_up->u.decl.type) != TYFUNC)
+			{
+				error("Incompatible function declaration %s", st_get_id_str(id));
+				return;
+			}
 			TYPE type_exs = ty_query_func_pascal(look_up->u.decl.type,&params,&check_args);
 			if((ty_query(look_up->u.decl.type) == TYFUNC) 
 				&& (type_exs == t))
@@ -163,7 +168,7 @@ void func_install(TYPE t, ST_ID id)
 			else error("Typetag is not TYFUNC/return type does not match.");
 		}
 		else if(look_up->tag == FDECL)
-			error("Duplicate function definition.");
+			error("Duplicate function definition %s", st_get_id_str(id));
 		else
 			error("Tag does not correspond to function.");
 	}
@@ -269,6 +274,7 @@ void eval_binop_assop(ENODE expr)
 	if(left_arg->expr_type == ID && binop != ASSOP)
 	{
 		evaluate(left_arg);
+		if(left_arg->type == NULL) return;
 		b_deref(ty_query(left_arg->type));
 	}
 	else evaluate(left_arg);
@@ -276,6 +282,7 @@ void eval_binop_assop(ENODE expr)
 		&& left_arg->expr_type == ID && right_arg->expr_type == ID
 		&& binop == TIMES)
 	{
+		if(left_arg->type == NULL || right_arg->type == NULL) return;
 		TYPETAG left_tag = ty_query(left_arg->type);
 		TYPETAG right_tag = ty_query(right_arg->type);
 		char * id_left = st_get_id_str(left_arg->u_expr.id);
@@ -284,6 +291,7 @@ void eval_binop_assop(ENODE expr)
 	}
 	evaluate(right_arg);
 	if(right_arg->expr_type==ID) {
+		if(right_arg->type == NULL) return;
 		b_deref(ty_query(right_arg->type));
 	}
 	if(!(left_arg->type == right_arg->type))
@@ -291,6 +299,7 @@ void eval_binop_assop(ENODE expr)
 		if(left_arg->expr_type == ID && right_arg->expr_type == ID 
 			&& binop != TIMES) 
 		{
+			if(left_arg->type == NULL || right_arg->type == NULL) return;
 			TYPETAG left_tag = ty_query(left_arg->type);
 			TYPETAG right_tag = ty_query(right_arg->type);
 			char * id_left = st_get_id_str(left_arg->u_expr.id);
@@ -301,6 +310,21 @@ void eval_binop_assop(ENODE expr)
 	//if(binop == EQUALS)
 	//{
 		//error("encode-assignment op");
+		
+		if(left_arg->type == NULL) return;
+		
+		if(left_arg->expr_type == ID)
+		{
+			int block;
+			ST_DR stdr = st_lookup(left_arg->u_expr.id, &block);
+			if(stdr != NULL && stdr->tag == FDECL)
+			{
+				error("left side of assignment is not l value");
+				return;
+			}
+		}
+		
+		//error("%d - %d",ty_query(left_arg->type), TYFUNC);
 		b_assign(ty_query(left_arg->type));
 	//}
 	/*else
