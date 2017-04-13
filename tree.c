@@ -233,10 +233,35 @@ ENODE new_unop_node(UNOP_TYPE unop, ENODE arg)
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
-	new_node->expr_type = UNOP;
-	new_node->type = arg->type;
-	new_node->u_expr.unop.op = unop;
-	new_node->u_expr.unop.arg = arg;
+	if(arg->expr_type == FPCONST)
+	{
+		switch(unop)
+		{
+			case UMINUS:
+				new_node = new_fpconst_node(-arg->u_expr.doubleval);
+				break;
+			default:
+				break;
+		}
+	}
+	else if(arg->expr_type == INTCONST)
+	{
+		switch(unop)
+		{
+			case UMINUS:
+				new_node = new_intconst_node(-arg->u_expr.intval);
+				break;
+			default:
+				break;
+		}
+	}
+	else
+	{
+		new_node->expr_type = UNOP;
+		new_node->type = arg->type;
+		new_node->u_expr.unop.op = unop;
+		new_node->u_expr.unop.arg = arg;
+	}
 	return new_node;
 }
 

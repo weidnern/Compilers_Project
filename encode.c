@@ -289,6 +289,13 @@ void eval_binop_assop(ENODE expr)
 		char * id_right = st_get_id_str(right_arg->u_expr.id);
 		b_convert(left_tag, right_tag);		
 	}
+	else if(left_arg->type != NULL && right_arg->type != NULL && ty_query(left_arg->type) != ty_query(right_arg->type))
+	{
+		TYPETAG left_tag = ty_query(left_arg->type);
+		TYPETAG right_tag = ty_query(right_arg->type);
+		if(left_tag == TYSIGNEDINT && right_tag == TYDOUBLE)
+			right_arg = new_intconst_node((int)right_arg->u_expr.doubleval);
+	}
 	evaluate(right_arg);
 	if(right_arg->expr_type==ID) {
 		if(right_arg->type == NULL) return;
@@ -307,52 +314,21 @@ void eval_binop_assop(ENODE expr)
 			b_convert(right_tag, left_tag);
 		}			
 	}
-	//if(binop == EQUALS)
-	//{
-		//error("encode-assignment op");
-		
-		if(left_arg->type == NULL) return;
-		
-		if(left_arg->expr_type == ID)
-		{
-			int block;
-			ST_DR stdr = st_lookup(left_arg->u_expr.id, &block);
-			if(stdr != NULL && stdr->tag == FDECL)
-			{
-				error("left side of assignment is not l value");
-				return;
-			}
-		}
-		
-		//error("%d - %d",ty_query(left_arg->type), TYFUNC);
-		b_assign(ty_query(left_arg->type));
-	//}
-	/*else
+	if(left_arg->type == NULL) return;
+	
+	if(left_arg->expr_type == ID)
 	{
-		if(left_arg->type != right_arg->type && 
-			left_arg->expr_type == ID && right_arg->expr_type == ID
-			&& binop != TIMES)
+		int block;
+		ST_DR stdr = st_lookup(left_arg->u_expr.id, &block);
+		if(stdr != NULL && stdr->tag == FDECL)
 		{
-			TYPETAG left_tag = ty_query(left_arg->type);
-			TYPETAG right_tag = ty_query(right_arg->type);
-			b_convert(right_tag, left_tag);
-			tag = left_tag;
+			error("left side of assignment is not l value");
+			return;
 		}
-		if(tag == TYFLOAT) tag = TYDOUBLE;
-		B_ARITH_REL_OP barop;
-		if(binop == PLUS) barop = B_ADD;
-		if(binop == MINUS) barop = B_SUB;
-		if(binop == TIMES) barop = B_MULT;
-		if(binop == DIVIDE) barop = B_DIV;
-		//if(binop == BIN_MOD) barop = B_MOD;
-		if(binop == LESS_THAN) barop = B_LT;
-		if(binop == LESS_THAN_EQUAL) barop = B_LE;
-		if(binop == GREATER_THAN) barop = B_GT;
-		if(binop == GREATER_THAN_EQUAL) barop = B_GE;
-		if(binop == NOT_EQUAL) barop = B_NE;
-		if(binop == DOUBLE_EQUALS) barop = B_EQ;
-		b_arith_rel_op(barop, tag);	
-	}*/
+	}
+	
+	//error("%d - %d",ty_query(left_arg->type), TYFUNC);
+	b_assign(ty_query(left_arg->type));
 }
 
 void eval_binop_binop(ENODE expr)
