@@ -172,20 +172,19 @@ ENODE new_binop_node(BINOP_TYPE binop, ENODE left, ENODE right)
 		switch(binop)
 		{
 			case PLUS:
-				//error("Adding int constants: %d", left->u_expr.intval);
-
-				//new_node->u_expr.intval = left->u_expr.intval + right->u_expr.intval;
+				new_node = new_intconst_node(left->u_expr.intval + right->u_expr.intval);
 				break;
 
 			case MINUS:
-				
+				new_node = new_intconst_node(left->u_expr.intval - right->u_expr.intval);
 				break;
 
 			case TIMES:
-				
+				new_node = new_intconst_node(left->u_expr.intval * right->u_expr.intval);
 				break;
 
 			case DIVIDE:
+				new_node = new_intconst_node(left->u_expr.intval / right->u_expr.intval);
 				break;
 
 			default:
@@ -197,19 +196,19 @@ ENODE new_binop_node(BINOP_TYPE binop, ENODE left, ENODE right)
 		switch(binop)
 		{
 			case PLUS:
-				//error("Adding int constants: %d", left->u_expr.intval);
-
+				new_node = new_fpconst_node(left->u_expr.doubleval + right->u_expr.doubleval);
 				break;
 
 			case MINUS:
-				
+				new_node = new_fpconst_node(left->u_expr.doubleval - right->u_expr.doubleval);
 				break;
 
 			case TIMES:
-				
+				new_node = new_fpconst_node(left->u_expr.doubleval * right->u_expr.doubleval);
 				break;
 
 			case DIVIDE:
+				new_node = new_fpconst_node(left->u_expr.doubleval / right->u_expr.doubleval);
 				break;
 
 			default:
