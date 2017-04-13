@@ -116,11 +116,82 @@ ENODE new_binop_node(BINOP_TYPE binop, ENODE left, ENODE right)
 	new_node = (ENODE)malloc(sizeof(EXPRESSION_NODE));
 	if(new_node == NULL)
 		return NULL;
+
 	new_node->expr_type = BINOP;
 	new_node->type = right->type;
 	new_node->u_expr.binop.op = binop;
-	new_node->u_expr.binop.left = left;
-	new_node->u_expr.binop.right = right;
+
+	//error("left child type: %d", left->expr_type);
+	//error("right child type: %d", right->expr_type);
+	if(left->expr_type == FPCONST)
+	{
+		if(right->expr_type == INTCONST)
+		{
+			//convert
+		}
+	}
+	else if(right->expr_type == FPCONST)
+	{
+		//convert
+	}
+	if(left->expr_type == INTCONST && right->expr_type == INTCONST)
+	{
+		switch(binop)
+		{
+			case PLUS:
+				error("Adding int constants: %d", left->u_expr.intval);
+
+				//new_node->u_expr.intval = left->u_expr.intval + right->u_expr.intval;
+				break;
+
+			case MINUS:
+				
+				break;
+
+			case TIMES:
+				
+				break;
+
+			case DIVIDE:
+				break;
+
+			default:
+				break;
+		}
+	}
+	else if(left->expr_type == FPCONST && right->expr_type == FPCONST)
+	{
+		switch(binop)
+		{
+			case PLUS:
+				//error("Adding int constants: %d", left->u_expr.intval);
+
+				break;
+
+			case MINUS:
+				
+				break;
+
+			case TIMES:
+				
+				break;
+
+			case DIVIDE:
+				break;
+
+			default:
+				break;
+		}
+	}
+	//Only set these if we aren't constant folding
+	//else
+	//{
+		//new_node->expr_type = BINOP;
+		//new_node->type = right->type;
+		//new_node->u_expr.binop.op = binop;
+		new_node->u_expr.binop.left = left;
+		new_node->u_expr.binop.right = right;
+	//}
 	return new_node;
 }
 
