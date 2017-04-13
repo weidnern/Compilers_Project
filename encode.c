@@ -293,7 +293,8 @@ void eval_binop_assop(ENODE expr)
 	{
 		TYPETAG left_tag = ty_query(left_arg->type);
 		TYPETAG right_tag = ty_query(right_arg->type);
-		if(left_tag == TYSIGNEDINT && right_tag == TYDOUBLE)
+		//error("left: %d, right: %d", left_tag, right_tag);
+		if(left_tag == TYSIGNEDINT && right_tag == TYDOUBLE && (right_arg->expr_type == FPCONST || right_arg->expr_type == INTCONST))
 			right_arg = new_intconst_node((int)right_arg->u_expr.doubleval);
 	}
 	evaluate(right_arg);
