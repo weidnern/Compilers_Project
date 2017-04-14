@@ -176,7 +176,6 @@ void func_install(TYPE t, ST_ID id)
 
 void unary_conv(TYPETAG * tag)
 {
-	error("did we do anything: %d", *tag);
 	if(*tag == TYSIGNEDCHAR || *tag == TYSIGNEDSHORTINT)
 	{
 		b_convert(*tag, TYSIGNEDINT);
@@ -197,16 +196,13 @@ void unary_conv(TYPETAG * tag)
 		b_convert(*tag, TYPTR);
 		*tag = TYPTR;
 	}*/
-	error("did we do anything: %d", *tag);
 }
 
 
 void binary_conv_left(TYPETAG * left, TYPETAG right)
 {
-	error("trying to convert to double: %d -> %d", *left, right);
 	if(*left == TYSIGNEDINT && right == TYDOUBLE)
 	{
-		error("converting to double");
 		b_convert(TYSIGNEDINT, TYDOUBLE);
 		*left = TYDOUBLE;
 	}
@@ -214,10 +210,8 @@ void binary_conv_left(TYPETAG * left, TYPETAG right)
 
 void binary_conv_right(TYPETAG left, TYPETAG * right)
 {
-	error("trying to convert to double right: %d -> %d", *right, left);
 	if(left == TYDOUBLE && *right == TYSIGNEDINT)
 	{
-		error("converting to double right");
 		b_convert(TYSIGNEDINT, TYDOUBLE);
 		*right = TYDOUBLE;
 	}
@@ -245,7 +239,6 @@ void evaluate(ENODE expr)
 		{
 			//error("an ID");
 			b_push_ext_addr(st_get_id_str(expr->u_expr.id));
-			error("The ID: %s",st_get_id_str(expr->u_expr.id));
 			break;
 		}
 		case(UNOP) :
@@ -408,15 +401,15 @@ void eval_binop_assop(ENODE expr)
 			//char * id_right = st_get_id_str(right_arg->u_expr.id);
 			//error("left: %s = %d",id_left, left_typetag);
 			//error("right: %s = %d",id_right, right_arg->expr_type);
-			error("before left: %d", left_typetag);
-			error("before right: %d", right_typetag);
-			error("after me: %d", my_typetag);
+			//error("before left: %d", left_typetag);
+			//error("before right: %d", right_typetag);
+			//error("after me: %d", my_typetag);
 			//error("unequaltypeset");
 			if(left_typetag == TYFLOAT && right_typetag == TYSIGNEDINT
 				&& right_arg->expr_type == BINOP
 				&& right_arg->u_expr.binop.op == PLUS)
 			{
-				error("her");
+				//error("her");
 				b_convert(TYDOUBLE, TYFLOAT);
 			}
 			else
@@ -439,6 +432,12 @@ void eval_binop_assop(ENODE expr)
 				b_convert(TYDOUBLE, TYFLOAT);
 				right_typetag = TYFLOAT;
 			}
+
+			if(left_typetag == TYSIGNEDINT && right_typetag == TYDOUBLE)
+			{
+				b_convert(TYDOUBLE, TYSIGNEDINT);
+				right_typetag = TYSIGNEDINT;
+			}
 			//b_convert(right_typetag, left_typetag);
 		//right_typetag = left_typetag;
 		//expr->type = left_arg->type;
@@ -448,9 +447,9 @@ void eval_binop_assop(ENODE expr)
 		}
 
 		
-		error("after left: %d", left_typetag);
-		error("after right: %d", right_typetag);
-		error("after me2: %d", my_typetag);
+		//error("after left: %d", left_typetag);
+		//error("after right: %d", right_typetag);
+		//error("after me2: %d", my_typetag);
 		
 		if(left_arg->expr_type == ID)
 		{
@@ -521,7 +520,7 @@ void eval_binop_binop(ENODE expr)
 	unary_conv(&left_typetag);
 if(left_typetag != right_typetag)
 	{
-		error("notequaltypes");
+		//error("notequaltypes");
 		if((left_typetag == TYSIGNEDCHAR || left_typetag == TYSIGNEDSHORTINT) && right_typetag == TYSIGNEDINT)
 		{
 			b_convert(left_typetag, TYSIGNEDINT);
@@ -584,8 +583,8 @@ if(left_typetag != right_typetag)
 	
 	//unary_conv(&right_typetag);
 
-	error("before left: %d", left_typetag);
-	error("before right: %d", right_typetag);
+	//error("before left: %d", left_typetag);
+	//error("before right: %d", right_typetag);
 unary_conv(&right_typetag);
 	
 	//binary_conv_right(left_typetag, &right_typetag);
@@ -625,7 +624,7 @@ unary_conv(&right_typetag);
 	unary_conv(&right_typetag);
 	if(left_typetag != right_typetag)
 	{
-		error("notequaltypes");
+		//error("notequaltypes");
 		
 		if((right_typetag == TYSIGNEDCHAR || right_typetag == TYSIGNEDSHORTINT) && left_typetag == TYSIGNEDINT)
 		{
@@ -679,18 +678,18 @@ unary_conv(&right_typetag);
 	}
 	else
 	{*/
-	error("after left: %d", left_typetag);
-	error("after right: %d", right_typetag);
+	//error("after left: %d", left_typetag);
+	//error("after right: %d", right_typetag);
 	if(left_typetag != right_typetag)
 	{
-		error("Not Equal");
+		//error("Not Equal");
 	}
 		if(right_typetag == TYFLOAT) bug("Right typetag is float");
 		if(right_typetag != left_typetag) 
 		{
 		}
 		else tag = right_typetag;
-		error("sedning up tag: %d", tag);
+		//error("sedning up tag: %d", tag);
 		
 		B_ARITH_REL_OP barop;
 		if(binop == PLUS) barop = B_ADD;

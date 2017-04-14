@@ -96,7 +96,7 @@ postfix_expr
 	  			if(tag == TYFUNC)
 	  			{
 	  				//error("is a function");
-	  				$$ = new_func_node($1, $3);
+	  				$$ = new_func_node($1, NULL);
 	  			}
 	  			else
 	  				error("expression is not a function type");
@@ -528,7 +528,8 @@ expression_statement
 	: expr_opt ';'	{	if($1 != NULL)
 						{
 							evaluate($1);
-							b_pop();
+							if($1->expr_type != FCALL)
+								b_pop();
 						}
 					}
 	;
