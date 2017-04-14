@@ -103,7 +103,7 @@ ENODE new_assop_node(ASSOP_TYPE assop, ENODE left, ENODE right)
 	if(new_node == NULL)
 		return NULL;
 	new_node->expr_type = ASSOP;
-	new_node->type = right->type;
+	new_node->type = left->type;
 	new_node->u_expr.assop.op = assop;
 	new_node->u_expr.assop.left = left;
 	new_node->u_expr.assop.right = right;
