@@ -174,6 +174,49 @@ void func_install(TYPE t, ST_ID id)
 	}
 }
 
+void unary_conv(TYPETAG * tag)
+{
+	if(*tag == TYSIGNEDCHAR || *tag == TYSIGNEDSHORTINT)
+	{
+		b_convert(*tag, TYSIGNEDINT);
+		*tag = TYSIGNEDINT;
+	}
+	if(*tag == TYFLOAT)
+	{
+		b_convert(*tag, TYDOUBLE);
+		*tag = TYDOUBLE;
+	}
+	if(*tag == TYARRAY)
+	{
+		b_convert(*tag, TYPTR);
+		*tag = TYPTR;
+	}
+	/*if(*tag == TYFUNC)
+	{
+		b_convert(*tag, TYPTR);
+		*tag = TYPTR;
+	}*/
+}
+
+
+void binary_conv_left(TYPETAG * left, TYPETAG right)
+{
+	if(*left == TYSIGNEDINT && right == TYDOUBLE)
+	{
+		b_convert(TYSIGNEDINT, TYDOUBLE);
+		*left = TYDOUBLE;
+	}
+}
+
+void binary_conv_right(TYPETAG left, TYPETAG * right)
+{
+	if(left == TYDOUBLE && *right == TYSIGNEDINT)
+	{
+		b_convert(TYSIGNEDINT, TYDOUBLE);
+		*right = TYDOUBLE;
+	}
+}
+
 void evaluate(ENODE expr)
 {
 	//error("begin evaluation");
@@ -204,14 +247,7 @@ void evaluate(ENODE expr)
 			UNOP_TYPE unop = expr->u_expr.unop.op;
 			TYPETAG tag = ty_query(expr->type);
 			b_deref(tag);
-			if(tag == TYSIGNEDCHAR || tag == TYSIGNEDSHORTINT)
-				b_convert(tag, TYSIGNEDINT);
-			if(tag == TYFLOAT)
-				b_convert(tag, TYDOUBLE);
-			if(tag == TYARRAY)
-				b_convert(tag, TYPTR);
-			if(tag == TYFUNC)
-				b_convert(tag, TYPTR);
+			unary_conv(&tag);
 			if(unop = UMINUS)
 				b_negate(tag);
 			break;
@@ -255,7 +291,10 @@ void evaluate(ENODE expr)
 			char * fname = st_get_id_str(expr->u_expr.fcall.fname->u_expr.id);
 			PARAM_LIST params;
 			BOOLEAN check_args;
-			TYPE type = ty_query_func_pascal(expr->u_expr.fcall.fname->type,&params,&check_args);
+			TYPE type;
+			if(ty_query(expr->u_expr.fcall.fname->type) == TYFUNC) 
+				type = ty_query_func_pascal(expr->u_expr.fcall.fname->type,&params,&check_args);
+			else type = ty_query_func_pascal(expr->type,&params,&check_args);
 			b_funcall_by_name(fname, ty_query(type));
 			break;
 		}
@@ -269,67 +308,139 @@ void eval_binop_assop(ENODE expr)
 	ASSOP_TYPE binop = expr->u_expr.assop.op;
 	TYPETAG tag = ty_query(expr->type);
 	ENODE left_arg = expr->u_expr.assop.left;
-	ENODE right_arg = expr->u_expr.assop.right;	
+	ENODE right_arg = expr->u_expr.assop.right;
+	if(left_arg->type == NULL) return;
+	if(right_arg->type == NULL) return;
+	TYPETAG left_typetag = ty_query(left_arg->type);
+	TYPETAG right_typetag = ty_query(right_arg->type);	
 	
-	if(left_arg->expr_type == ID && binop != ASSOP)
+	if(left_arg->expr_type == ID && binop != EQUALS)
 	{
 		evaluate(left_arg);
 		if(left_arg->type == NULL) return;
 		b_deref(ty_query(left_arg->type));
 	}
 	else evaluate(left_arg);
-	if(!(left_arg->type == right_arg->type)
-		&& left_arg->expr_type == ID && right_arg->expr_type == ID
-		&& binop == TIMES)
+	
+	if(binop != EQUALS) unary_conv(&left_typetag);
+	
+	if(binop != EQUALS) binary_conv_left(&left_typetag, right_typetag);
+	
+	if(right_arg->expr_type==ID) 
 	{
-		if(left_arg->type == NULL || right_arg->type == NULL) return;
-		TYPETAG left_tag = ty_query(left_arg->type);
-		TYPETAG right_tag = ty_query(right_arg->type);
-		char * id_left = st_get_id_str(left_arg->u_expr.id);
-		char * id_right = st_get_id_str(right_arg->u_expr.id);
-		b_convert(left_tag, right_tag);		
-	}
-	else if(left_arg->type != NULL && right_arg->type != NULL && ty_query(left_arg->type) != ty_query(right_arg->type))
-	{
-		TYPETAG left_tag = ty_query(left_arg->type);
-		TYPETAG right_tag = ty_query(right_arg->type);
-		//error("left: %d, right: %d", left_tag, right_tag);
-		if(left_tag == TYSIGNEDINT && right_tag == TYDOUBLE && (right_arg->expr_type == FPCONST || right_arg->expr_type == INTCONST))
-			right_arg = new_intconst_node((int)right_arg->u_expr.doubleval);
-	}
-	evaluate(right_arg);
-	if(right_arg->expr_type==ID) {
 		if(right_arg->type == NULL) return;
+		evaluate(right_arg);
 		b_deref(ty_query(right_arg->type));
 	}
-	if(!(left_arg->type == right_arg->type))
+	else if(right_arg->expr_type == UNOP && right_arg->u_expr.unop.op == UMINUS)
 	{
-		if(left_arg->expr_type == ID && right_arg->expr_type == ID 
-			&& binop != TIMES) 
-		{
-			if(left_arg->type == NULL || right_arg->type == NULL) return;
-			TYPETAG left_tag = ty_query(left_arg->type);
-			TYPETAG right_tag = ty_query(right_arg->type);
-			char * id_left = st_get_id_str(left_arg->u_expr.id);
-			char * id_right = st_get_id_str(right_arg->u_expr.id);
-			b_convert(right_tag, left_tag);
-		}			
+		if(right_arg->u_expr.unop.arg->expr_type == ID)
+			b_push_ext_addr(st_get_id_str(right_arg->u_expr.unop.arg->u_expr.id));
+		evaluate(right_arg);
 	}
-	if(left_arg->type == NULL) return;
-	
-	if(left_arg->expr_type == ID)
+	else if(right_arg->expr_type == FCALL && left_arg->expr_type != FCALL && binop == EQUALS)
 	{
-		int block;
-		ST_DR stdr = st_lookup(left_arg->u_expr.id, &block);
-		if(stdr != NULL && stdr->tag == FDECL)
+		PARAM_LIST params;
+		BOOLEAN check_args;
+		TYPE type;
+		if(left_typetag != ty_query(right_arg->u_expr.fcall.fname->type))
 		{
-			error("left side of assignment is not l value");
-			return;
+			type = ty_query_func_pascal(right_arg->type,&params,&check_args);
+			evaluate(right_arg);
+			b_convert(ty_query(type), left_typetag);
+		}
+		else
+			evaluate(right_arg);
+	}
+	else evaluate(right_arg);
+	
+	if(binop != EQUALS) unary_conv(&right_typetag);
+	
+	if(binop != EQUALS) binary_conv_right(left_typetag, &right_typetag);
+
+	if(binop == EQUALS && right_arg->expr_type == BINOP 
+		&& right_arg->u_expr.binop.op == EQUALS)
+	{
+		b_assign(left_typetag);
+		return;
+	}			
+	
+	if(left_arg->expr_type == FCALL || right_arg->expr_type == FCALL)
+	{
+		PARAM_LIST params;
+		BOOLEAN check_args;
+		if(left_typetag == TYFUNC)
+		{
+			TYPE type;
+			if(ty_query(left_arg->u_expr.fcall.fname->type) == TYFUNC) 
+				type = ty_query_func_pascal(left_arg->u_expr.fcall.fname->type,&params,&check_args);
+			else type = ty_query_func_pascal(left_arg->type,&params,&check_args);
+			left_typetag = ty_query(type);
+		}
+		if(right_typetag == TYFUNC)
+		{
+			TYPE type;
+			if(ty_query(right_arg->u_expr.fcall.fname->type) == TYFUNC) 
+				type = ty_query_func_pascal(right_arg->u_expr.fcall.fname->type,&params,&check_args);
+			else type = ty_query_func_pascal(right_arg->type,&params,&check_args);
+			right_typetag = ty_query(type);
 		}
 	}
 	
-	//error("%d - %d",ty_query(left_arg->type), TYFUNC);
-	b_assign(ty_query(left_arg->type));
+	if(binop == EQUALS)
+	{
+		if(left_typetag != right_typetag && right_arg->expr_type != FCALL) 
+		{
+			if(left_typetag == TYFLOAT && right_typetag == TYSIGNEDINT
+				&& right_arg->expr_type == BINOP
+				&& right_arg->u_expr.binop.op == PLUS)
+			{
+				b_convert(TYDOUBLE, TYFLOAT);
+			}
+			else
+			{
+			unary_conv(&right_typetag);
+			b_convert(right_typetag, left_typetag);
+			}
+		}
+		
+		if(left_arg->expr_type == ID)
+		{
+			int block;
+			ST_DR stdr = st_lookup(left_arg->u_expr.id, &block);
+			if(stdr != NULL && stdr->tag == FDECL)
+			{
+				error("left side of assignment is not l-value");
+				return;
+			}
+		}
+					
+		b_assign(left_typetag);
+	}
+	else
+	{
+		if(right_typetag == TYFLOAT) bug("Right typetag is float");
+		if(right_typetag != left_typetag) 
+		{
+		}
+		else tag = right_typetag;
+		
+		B_ARITH_REL_OP barop;
+		if(binop == PLUS) barop = B_ADD;
+		if(binop == MINUS) barop = B_SUB;
+		if(binop == TIMES) barop = B_MULT;
+		if(binop == DIVIDE) barop = B_DIV;
+		//if(binop == BIN_MOD) barop = B_MOD;
+		if(binop == LESS_THAN) barop = B_LT;
+		if(binop == LESS_THAN_EQUAL) barop = B_LE;
+		if(binop == GREATER_THAN) barop = B_GT;
+		if(binop == GREATER_THAN_EQUAL) barop = B_GE;
+		if(binop == NOT_EQUAL) barop = B_NE;
+		if(binop == DOUBLE_EQUALS) barop = B_EQ;
+		b_arith_rel_op(barop, tag);
+		right_typetag = left_typetag;
+		expr->u_expr.binop.right->type = left_arg->type;	
+	}
 }
 
 void eval_binop_binop(ENODE expr)
@@ -339,61 +450,123 @@ void eval_binop_binop(ENODE expr)
 	ENODE left_arg = expr->u_expr.binop.left;
 	ENODE right_arg = expr->u_expr.binop.right;	
 	
-	if(left_arg->expr_type == ID && binop != ASSOP)
+	TYPETAG left_typetag = ty_query(left_arg->type);
+	TYPETAG right_typetag = ty_query(right_arg->type);	
+	
+	if(left_arg->expr_type == ID && binop != EQUALS)
 	{
 		evaluate(left_arg);
+		if(left_arg->type == NULL) return;
 		b_deref(ty_query(left_arg->type));
 	}
 	else evaluate(left_arg);
-	if(!(left_arg->type == right_arg->type)
-		&& left_arg->expr_type == ID && right_arg->expr_type == ID
-		&& binop == TIMES)
+	
+	if(binop != EQUALS) unary_conv(&left_typetag);
+	
+	if(binop != EQUALS) binary_conv_left(&left_typetag, right_typetag);
+	
+	if(right_arg->expr_type==ID) 
 	{
-		TYPETAG left_tag = ty_query(left_arg->type);
-		TYPETAG right_tag = ty_query(right_arg->type);
-		char * id_left = st_get_id_str(left_arg->u_expr.id);
-		char * id_right = st_get_id_str(right_arg->u_expr.id);
-		b_convert(left_tag, right_tag);		
-	}
-	evaluate(right_arg);
-	if(right_arg->expr_type==ID) {
+		evaluate(right_arg);
 		b_deref(ty_query(right_arg->type));
 	}
-	if(!(left_arg->type == right_arg->type))
+	else if(right_arg->expr_type == UNOP && right_arg->u_expr.unop.op == UMINUS)
 	{
-		if(left_arg->expr_type == ID && right_arg->expr_type == ID 
-			&& binop != TIMES) 
-		{
-			TYPETAG left_tag = ty_query(left_arg->type);
-			TYPETAG right_tag = ty_query(right_arg->type);
-			char * id_left = st_get_id_str(left_arg->u_expr.id);
-			char * id_right = st_get_id_str(right_arg->u_expr.id);
-			b_convert(right_tag, left_tag);
-		}			
+		if(right_arg->u_expr.unop.arg->expr_type == ID)
+			b_push_ext_addr(st_get_id_str(right_arg->u_expr.unop.arg->u_expr.id));
+		evaluate(right_arg);
 	}
-		if(left_arg->type != right_arg->type && 
-			left_arg->expr_type == ID && right_arg->expr_type == ID
-			&& binop != TIMES)
+	else if(right_arg->expr_type == FCALL && left_arg->expr_type != FCALL && binop == EQUALS)
+	{
+		PARAM_LIST params;
+		BOOLEAN check_args;
+		TYPE type;
+		if(left_typetag != ty_query(right_arg->u_expr.fcall.fname->type))
 		{
-			TYPETAG left_tag = ty_query(left_arg->type);
-			TYPETAG right_tag = ty_query(right_arg->type);
-			b_convert(right_tag, left_tag);
-			tag = left_tag;
+			type = ty_query_func_pascal(right_arg->type,&params,&check_args);
+			evaluate(right_arg);
+			b_convert(ty_query(type), left_typetag);
 		}
-		if(tag == TYFLOAT) tag = TYDOUBLE;
+		else
+			evaluate(right_arg);
+	}
+	else evaluate(right_arg);
+	
+	if(binop != EQUALS) unary_conv(&right_typetag);
+	
+	if(binop != EQUALS) binary_conv_right(left_typetag, &right_typetag);
+
+	if(binop == EQUALS && right_arg->expr_type == BINOP 
+		&& right_arg->u_expr.binop.op == EQUALS)
+	{
+		b_assign(left_typetag);
+		return;
+	}			
+	
+	if(left_arg->expr_type == FCALL || right_arg->expr_type == FCALL)
+	{
+		PARAM_LIST params;
+		BOOLEAN check_args;
+		if(left_typetag == TYFUNC)
+		{
+			TYPE type;
+			if(ty_query(left_arg->u_expr.fcall.fname->type) == TYFUNC) 
+				type = ty_query_func_pascal(left_arg->u_expr.fcall.fname->type,&params,&check_args);
+			else type = ty_query_func_pascal(left_arg->type,&params,&check_args);
+			left_typetag = ty_query(type);
+		}
+		if(right_typetag == TYFUNC)
+		{
+			TYPE type;
+			if(ty_query(right_arg->u_expr.fcall.fname->type) == TYFUNC) 
+				type = ty_query_func_pascal(right_arg->u_expr.fcall.fname->type,&params,&check_args);
+			else type = ty_query_func_pascal(right_arg->type,&params,&check_args);
+			right_typetag = ty_query(type);
+		}
+	}
+	
+	if(binop == EQUALS)
+	{
+		if(left_typetag != right_typetag && right_arg->expr_type != FCALL) 
+		{
+			if(left_typetag == TYFLOAT && right_typetag == TYSIGNEDINT
+				&& right_arg->expr_type == BINOP
+				&& right_arg->u_expr.binop.op == PLUS)
+			{
+				b_convert(TYDOUBLE, TYFLOAT);
+			}
+			else
+			{
+			unary_conv(&right_typetag);
+			b_convert(right_typetag, left_typetag);
+			}
+		}			
+		b_assign(left_typetag);
+	}
+	else
+	{
+		if(right_typetag == TYFLOAT) bug("Right typetag is float");
+		if(right_typetag != left_typetag) 
+		{
+		}
+		else tag = right_typetag;
+		
 		B_ARITH_REL_OP barop;
 		if(binop == PLUS) barop = B_ADD;
 		if(binop == MINUS) barop = B_SUB;
 		if(binop == TIMES) barop = B_MULT;
 		if(binop == DIVIDE) barop = B_DIV;
 		//if(binop == BIN_MOD) barop = B_MOD;
-		//if(binop == LESS_THAN) barop = B_LT;
-		//if(binop == LESS_THAN_EQUAL) barop = B_LE;
-		//if(binop == GREATER_THAN) barop = B_GT;
-		//if(binop == GREATER_THAN_EQUAL) barop = B_GE;
-		//if(binop == NOT_EQUAL) barop = B_NE;
-		//if(binop == DOUBLE_EQUALS) barop = B_EQ;
-		b_arith_rel_op(barop, tag);	
+		if(binop == LESS_THAN) barop = B_LT;
+		if(binop == LESS_THAN_EQUAL) barop = B_LE;
+		if(binop == GREATER_THAN) barop = B_GT;
+		if(binop == GREATER_THAN_EQUAL) barop = B_GE;
+		if(binop == NOT_EQUAL) barop = B_NE;
+		if(binop == DOUBLE_EQUALS) barop = B_EQ;
+		b_arith_rel_op(barop, tag);
+		right_typetag = left_typetag;
+		expr->u_expr.binop.right->type = left_arg->type;	
+	}	
 }
 
 void eval_binop_comp(ENODE expr)
@@ -403,53 +576,112 @@ void eval_binop_comp(ENODE expr)
 	ENODE left_arg = expr->u_expr.comp.left;
 	ENODE right_arg = expr->u_expr.comp.right;	
 	
-	if(left_arg->expr_type == ID && binop != ASSOP)
+	TYPETAG left_typetag = ty_query(left_arg->type);
+	TYPETAG right_typetag = ty_query(right_arg->type);	
+	
+	if(left_arg->expr_type == ID && binop != EQUALS)
 	{
 		evaluate(left_arg);
+		if(left_arg->type == NULL) return;
 		b_deref(ty_query(left_arg->type));
 	}
 	else evaluate(left_arg);
-	if(!(left_arg->type == right_arg->type)
-		&& left_arg->expr_type == ID && right_arg->expr_type == ID
-		&& binop == TIMES)
+	
+	if(binop != EQUALS) unary_conv(&left_typetag);
+	
+	if(binop != EQUALS) binary_conv_left(&left_typetag, right_typetag);
+	
+	if(right_arg->expr_type==ID) 
 	{
-		TYPETAG left_tag = ty_query(left_arg->type);
-		TYPETAG right_tag = ty_query(right_arg->type);
-		char * id_left = st_get_id_str(left_arg->u_expr.id);
-		char * id_right = st_get_id_str(right_arg->u_expr.id);
-		b_convert(left_tag, right_tag);		
-	}
-	evaluate(right_arg);
-	if(right_arg->expr_type==ID) {
+		evaluate(right_arg);
 		b_deref(ty_query(right_arg->type));
 	}
-	if(!(left_arg->type == right_arg->type))
+	else if(right_arg->expr_type == UNOP && right_arg->u_expr.unop.op == UMINUS)
 	{
-		if(left_arg->expr_type == ID && right_arg->expr_type == ID 
-			&& binop != TIMES) 
-		{
-			TYPETAG left_tag = ty_query(left_arg->type);
-			TYPETAG right_tag = ty_query(right_arg->type);
-			char * id_left = st_get_id_str(left_arg->u_expr.id);
-			char * id_right = st_get_id_str(right_arg->u_expr.id);
-			b_convert(right_tag, left_tag);
-		}			
+		if(right_arg->u_expr.unop.arg->expr_type == ID)
+			b_push_ext_addr(st_get_id_str(right_arg->u_expr.unop.arg->u_expr.id));
+		evaluate(right_arg);
 	}
-		if(left_arg->type != right_arg->type && 
-			left_arg->expr_type == ID && right_arg->expr_type == ID
-			&& binop != TIMES)
+	else if(right_arg->expr_type == FCALL && left_arg->expr_type != FCALL && binop == EQUALS)
+	{
+		PARAM_LIST params;
+		BOOLEAN check_args;
+		TYPE type;
+		if(left_typetag != ty_query(right_arg->u_expr.fcall.fname->type))
 		{
-			TYPETAG left_tag = ty_query(left_arg->type);
-			TYPETAG right_tag = ty_query(right_arg->type);
-			b_convert(right_tag, left_tag);
-			tag = left_tag;
+			type = ty_query_func_pascal(right_arg->type,&params,&check_args);
+			evaluate(right_arg);
+			b_convert(ty_query(type), left_typetag);
 		}
-		if(tag == TYFLOAT) tag = TYDOUBLE;
+		else
+			evaluate(right_arg);
+	}
+	else evaluate(right_arg);
+	
+	if(binop != EQUALS) unary_conv(&right_typetag);
+	
+	if(binop != EQUALS) binary_conv_right(left_typetag, &right_typetag);
+
+	if(binop == EQUALS && right_arg->expr_type == BINOP 
+		&& right_arg->u_expr.binop.op == EQUALS)
+	{
+		b_assign(left_typetag);
+		return;
+	}			
+	
+	if(left_arg->expr_type == FCALL || right_arg->expr_type == FCALL)
+	{
+		PARAM_LIST params;
+		BOOLEAN check_args;
+		if(left_typetag == TYFUNC)
+		{
+			TYPE type;
+			if(ty_query(left_arg->u_expr.fcall.fname->type) == TYFUNC) 
+				type = ty_query_func_pascal(left_arg->u_expr.fcall.fname->type,&params,&check_args);
+			else type = ty_query_func_pascal(left_arg->type,&params,&check_args);
+			left_typetag = ty_query(type);
+		}
+		if(right_typetag == TYFUNC)
+		{
+			TYPE type;
+			if(ty_query(right_arg->u_expr.fcall.fname->type) == TYFUNC) 
+				type = ty_query_func_pascal(right_arg->u_expr.fcall.fname->type,&params,&check_args);
+			else type = ty_query_func_pascal(right_arg->type,&params,&check_args);
+			right_typetag = ty_query(type);
+		}
+	}
+	
+	if(binop == EQUALS)
+	{
+		if(left_typetag != right_typetag && right_arg->expr_type != FCALL) 
+		{
+			if(left_typetag == TYFLOAT && right_typetag == TYSIGNEDINT
+				&& right_arg->expr_type == BINOP
+				&& right_arg->u_expr.binop.op == PLUS)
+			{
+				b_convert(TYDOUBLE, TYFLOAT);
+			}
+			else
+			{
+			unary_conv(&right_typetag);
+			b_convert(right_typetag, left_typetag);
+			}
+		}			
+		b_assign(left_typetag);
+	}
+	else
+	{
+		if(right_typetag == TYFLOAT) bug("Right typetag is float");
+		if(right_typetag != left_typetag) 
+		{
+		}
+		else tag = right_typetag;
+		
 		B_ARITH_REL_OP barop;
-		//if(binop == PLUS) barop = B_ADD;
-		//if(binop == MINUS) barop = B_SUB;
-		//if(binop == TIMES) barop = B_MULT;
-		//if(binop == DIVIDE) barop = B_DIV;
+		if(binop == PLUS) barop = B_ADD;
+		if(binop == MINUS) barop = B_SUB;
+		if(binop == TIMES) barop = B_MULT;
+		if(binop == DIVIDE) barop = B_DIV;
 		//if(binop == BIN_MOD) barop = B_MOD;
 		if(binop == LESS_THAN) barop = B_LT;
 		if(binop == LESS_THAN_EQUAL) barop = B_LE;
@@ -457,7 +689,10 @@ void eval_binop_comp(ENODE expr)
 		if(binop == GREATER_THAN_EQUAL) barop = B_GE;
 		if(binop == NOT_EQUAL) barop = B_NE;
 		if(binop == DOUBLE_EQUALS) barop = B_EQ;
-		b_arith_rel_op(barop, tag);	
+		b_arith_rel_op(barop, tag);
+		right_typetag = left_typetag;
+		expr->u_expr.binop.right->type = left_arg->type;	
+	}
 }
 
 
