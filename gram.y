@@ -17,6 +17,9 @@
 
     int yylex();
     int yyerror(char *s);
+    
+    CLIST global_stack;
+	TYPE global_type = NULL;
 
 %}
 
@@ -535,22 +538,82 @@ expression_statement
 	;
 
 selection_statement
-	: IF '(' expr ')' statement
-	| IF '(' expr ')' statement ELSE statement
-	| SWITCH '(' expr ')' statement
+	: IF '(' expr ')' if_action statement	{b_label($<y_string>5);}
+	| IF '(' expr ')' if_action statement ELSE	{char * skip_label = new_symbol();
+												b_jump(skip_label);
+												$<y_string>$ = skip_label;
+												b_label($<y_string>5);
+												}
+	statement	{b_label($<y_string>8);}
+	| SWITCH '(' expr ')' statement	{/*100 level*/}
+	;
+	
+if_action
+	: /*empty*/		{
+					ENODE expr = $<y_enode>-1;
+					if(expr->expr_type == ID)
+					{
+						evaluate(expr);
+						b_deref(ty_query(expr->type));
+					}
+					else
+						evaluate(expr);
+					char * skip_label = new_symbol();
+					b_cond_jump(ty_query(expr->type), B_ZERO, skip_label);
+					$<y_string>$ = skip_label;
+					}
 	;
 
 iteration_statement
-	: WHILE '(' expr ')' statement
-	| DO statement WHILE '(' expr ')' ';'
-	| FOR '(' expr_opt ';' expr_opt ';' expr_opt ')' statement
+	: WHILE '(' expr ')'	{
+							char * start = new_symbol();
+							char * end = new_symbol();
+							CNODE rec = new_cnode(CWHILE, start, end);
+							global_stack = push_clist_node(global_stack, rec);
+							b_label(start);
+							evaluate($3);
+							b_cond_jump(ty_query($3->type), B_ZERO, end);
+							}
+	statement	{
+				b_jump(global_stack->ctn->start);  
+		  		b_label(global_stack->ctn->stop);
+		  		global_stack = pop_clist_node(global_stack);
+				}
+	| DO statement WHILE '(' expr ')' ';' {/*not doing this*/}
+	| FOR '(' expr_opt ';' expr_opt ';' expr_opt ')' statement	{/*90 level*/}
 	;
 
 jump_statement
-	: GOTO identifier ';'
-	| CONTINUE ';'
-	| BREAK ';'
-	| RETURN expr_opt ';'
+	: GOTO identifier ';'	{/*not doing this*/}
+	| CONTINUE ';'	{/*not doing this*/}
+	| BREAK ';'	{
+				if(global_stack != NULL)
+				b_jump(global_stack->ctn->stop); 
+			  	else error("Break not inside switch or loop"); /*might need to look at this some more to get the error messaging right*/
+			  	}
+	| RETURN expr_opt ';'	{
+							if($2 != NULL)
+							{
+								TYPE exp_ret = $2->type;/*could cause some problems*/
+								evaluate($2);
+								if(exp_ret != global_type && global_type != NULL)
+								{
+									if(ty_query($2->type) != TYFUNC)
+									{
+										b_convert(ty_query(exp_ret), ty_query(global_type));
+								  		b_encode_return(ty_query($2->type));
+									}
+									else
+									{
+										b_convert(TYSIGNEDINT, ty_query(global_type));
+										b_encode_return(ty_query(global_type));
+									}
+								}
+								else {b_encode_return(ty_query($2->type));}
+							 }
+							 else
+							 	b_encode_return(TYVOID);
+							 }
 	;
 
  /*******************************
@@ -571,7 +634,7 @@ function_definition
 	: declarator {/*Alloc STDR, try to install, backend, default return type is int*/
 						ST_ID id = get_id($1);
 						char * id_str = st_get_id_str(id);
-						
+						global_type = ty_build_basic(TYSIGNEDINT); 
 						func_install(ty_build_basic(TYSIGNEDINT), id);
 				  		
 				  		st_enter_block();
@@ -581,12 +644,13 @@ function_definition
 	compound_statement	{
 			  				b_func_epilogue(st_get_id_str(get_id($1)));
 			  				st_exit_block();
+			  				global_type = NULL;
 						}
 	| declaration_specifiers declarator 
 	{/*Alloc STDR, try to install, backend*/
 		TYPE decl_specs = build_base($1);
 		ST_ID id = get_id($2);
-		
+		global_type = decl_specs;
 		func_install(decl_specs, id);
   		
   		st_enter_block();
@@ -595,6 +659,7 @@ function_definition
 	compound_statement {/*finish, exit*/
 						b_func_epilogue(st_get_id_str(get_id($2)));
 			  			st_exit_block();
+			  			global_type = NULL;
 			  		   }
 	;
 

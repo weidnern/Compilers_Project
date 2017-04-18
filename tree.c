@@ -382,9 +382,9 @@ EXPR_LIST make_expr_list_node(ENODE expr, EXPR_LIST list)
 	return node;	
 }
 
-CNODe new_cnode(CONTROL_TYPE ctype, char *start, char *stop)
+CNODE new_cnode(CONTROL_TYPE ctype, char *start, char *stop)
 {
-	CNODE new_cnode = (CONTROL_TYPE_NODE) malloc(sizeof(CNODE));
+	CNODE new_cnode = (CNODE) malloc(sizeof(CONTROL_TYPE_NODE));
 	new_cnode->ctype = ctype;
 	new_cnode->start = start;
 	new_cnode->stop = stop;
@@ -393,7 +393,7 @@ CNODe new_cnode(CONTROL_TYPE ctype, char *start, char *stop)
 
 CLIST new_clist()
 {
-	CLIST new_clist = (CONTROL_TYPE_LIST) malloc(sizeof(CLIST));
+	CLIST new_clist = (CLIST) malloc(sizeof(CONTROL_TYPE_LIST));
 	new_clist->ctn = NULL;
 	new_clist->next = NULL;
 	return new_clist;
@@ -401,13 +401,13 @@ CLIST new_clist()
 
 CLIST push_clist_node(CLIST list, CNODE node)
 {
-	CLIST new_clist = (CONTROL_TYPE_LIST) malloc(sizeof(CLIST));
+	CLIST new_clist = (CLIST) malloc(sizeof(CONTROL_TYPE_LIST));
 	new_clist->ctn = node;
 	new_clist->next = list;
 	return new_clist;
 }
 
-CILST pop_clist_node(CLIST list)
+CLIST pop_clist_node(CLIST list)
 {
 	CLIST temp = list;
 	list = list->next;

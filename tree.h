@@ -125,9 +125,9 @@ ENODE new_func_node(ENODE name, EXPR_LIST args);
 EXPR_LIST make_expr_list_node(ENODE expr, EXPR_LIST list);
 
 //Control types
-CNODe new_cnode(CONTROL_TYPE ctype, char *start, char *stop);
+CNODE new_cnode(CONTROL_TYPE ctype, char *start, char *stop);
 CLIST new_clist();
 CLIST push_clist_node(CLIST list, CNODE node);
-CILST pop_clist_node(CLIST list);
+CLIST pop_clist_node(CLIST list);
 
 #endif
