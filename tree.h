@@ -40,6 +40,12 @@ typedef enum {
 	GINT, GCHAR, GFLOAT, GDOUBLE
 } GLOBALV_TYPE;
 
+
+typedef enum {
+	CWHILE, CFOR, CSWITCH
+} CONTROL_TYPE;
+
+
 //tree node struct
 typedef struct tnode {
 	TNODE_TYPE type;
@@ -87,6 +93,17 @@ typedef struct enode {
 	} u_expr;
 } EXPRESSION_NODE, *ENODE;
 
+typedef struct cnode {
+	CONTROL_TYPE ctype;
+	char * start;
+	char * stop;
+} CONTROL_TYPE_NODE, *CNODE;
+
+typedef struct clist {
+	CNODE ctn;
+	struct clist *next;
+} CONTROL_TYPE_LIST, *CLIST;
+
 
 TNODE new_node(TNODE tn, TNODE_TYPE type);
 TNODE push_node(TNODE tn, TNODE next);
@@ -106,5 +123,11 @@ ENODE new_fpconst_node (double con);
 ENODE new_id_node(ST_ID id);
 ENODE new_func_node(ENODE name, EXPR_LIST args);
 EXPR_LIST make_expr_list_node(ENODE expr, EXPR_LIST list);
+
+//Control types
+CNODe new_cnode(CONTROL_TYPE ctype, char *start, char *stop);
+CLIST new_clist();
+CLIST push_clist_node(CLIST list, CNODE node);
+CILST pop_clist_node(CLIST list);
 
 #endif
