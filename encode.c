@@ -317,22 +317,12 @@ void eval_binop_assop(ENODE expr)
 
 	//error("assop left type: %d",left_typetag);
 	//error("assop right type: %d",right_typetag);	
-	
-	/*if(left_arg->expr_type == ID && binop != EQUALS)
-	{
-		evaluate(left_arg);
-		if(left_arg->type == NULL) return;
-		b_deref(ty_query(left_arg->type));
-	}
-	else*/ evaluate(left_arg);
+	evaluate(left_arg);
 	left_typetag = ty_query(left_arg->type);
-	
-	//if(binop != EQUALS) unary_conv(&left_typetag);
-	
-	//if(binop != EQUALS) binary_conv_left(&left_typetag, right_typetag);
 	
 	if(right_arg->expr_type==ID) 
 	{
+		error("assop right arg is id");
 		if(right_arg->type == NULL) return;
 		evaluate(right_arg);
 		b_deref(ty_query(right_arg->type));
@@ -395,7 +385,7 @@ void eval_binop_assop(ENODE expr)
 	/*if(binop == EQUALS)
 	{*/
 		TYPETAG my_typetag = ty_query(expr->type);
-		if((left_typetag != right_typetag) && (right_arg->expr_type != FCALL))
+		if((left_typetag != right_typetag))// && (right_arg->expr_type != FCALL))
 		{
 			//char * id_left = st_get_id_str(left_arg->u_expr.id);
 			//char * id_right = st_get_id_str(right_arg->u_expr.id);
@@ -550,6 +540,11 @@ if(left_typetag != right_typetag)
 		{
 			b_convert(left_typetag, TYDOUBLE);
 			left_typetag = TYDOUBLE;
+		}
+		else if(left_typetag == TYFLOAT && right_typetag == TYSIGNEDINT)
+		{
+			b_convert(right_typetag, TYFLOAT);
+			right_typetag = TYFLOAT;
 		}
 	}
 
@@ -720,7 +715,7 @@ void eval_binop_comp(ENODE expr)
 	TYPETAG left_typetag = ty_query(left_arg->type);
 	TYPETAG right_typetag = ty_query(right_arg->type);	
 	
-	if(left_arg->expr_type == ID && binop != EQUALS)
+	if(left_arg->expr_type == ID)
 	{
 		evaluate(left_arg);
 		if(left_arg->type == NULL) return;
@@ -728,9 +723,44 @@ void eval_binop_comp(ENODE expr)
 	}
 	else evaluate(left_arg);
 	
-	if(binop != EQUALS) unary_conv(&left_typetag);
+	/*if(binop != EQUALS)*/ unary_conv(&left_typetag);
 	
-	if(binop != EQUALS) binary_conv_left(&left_typetag, right_typetag);
+	/*if(binop != EQUALS)*/ binary_conv_left(&left_typetag, right_typetag);
+	
+	if(left_typetag != right_typetag)
+	{
+		//error("notequaltypes");
+		if((left_typetag == TYSIGNEDCHAR || left_typetag == TYSIGNEDSHORTINT) && right_typetag == TYSIGNEDINT)
+		{
+			b_convert(left_typetag, TYSIGNEDINT);
+			left_typetag = TYSIGNEDINT;
+		}
+		/*else if((left_typetag == TYSIGNEDCHAR || left_typetag == TYSIGNEDSHORTINT) && right_typetag == TYFLOAT)
+		{
+			b_convert(left_typetag, TYFLOAT);
+			left_typetag = TYFLOAT;
+		}*/
+		else if((left_typetag == TYSIGNEDCHAR || left_typetag == TYSIGNEDSHORTINT) && right_typetag == TYDOUBLE)
+		{
+			b_convert(left_typetag, TYDOUBLE);
+			left_typetag = TYDOUBLE;
+		}
+		else if(left_typetag == TYSIGNEDINT && right_typetag == TYFLOAT)
+		{
+			b_convert(left_typetag, TYDOUBLE);
+			left_typetag = TYDOUBLE;
+		}
+		else if(left_typetag == TYSIGNEDINT && right_typetag == TYDOUBLE)
+		{
+			b_convert(left_typetag, TYDOUBLE);
+			left_typetag = TYDOUBLE;
+		}
+		else if(left_typetag == TYFLOAT && right_typetag == TYDOUBLE)
+		{
+			b_convert(left_typetag, TYDOUBLE);
+			left_typetag = TYDOUBLE;
+		}
+	}
 	
 	if(right_arg->expr_type==ID) 
 	{
@@ -743,7 +773,7 @@ void eval_binop_comp(ENODE expr)
 			b_push_ext_addr(st_get_id_str(right_arg->u_expr.unop.arg->u_expr.id));
 		evaluate(right_arg);
 	}
-	else if(right_arg->expr_type == FCALL && left_arg->expr_type != FCALL && binop == EQUALS)
+	/*else if(right_arg->expr_type == FCALL && left_arg->expr_type != FCALL)
 	{
 		PARAM_LIST params;
 		BOOLEAN check_args;
@@ -756,19 +786,19 @@ void eval_binop_comp(ENODE expr)
 		}
 		else
 			evaluate(right_arg);
-	}
+	}*/
 	else evaluate(right_arg);
 	
-	if(binop != EQUALS) unary_conv(&right_typetag);
+	/*if(binop != EQUALS)*/ unary_conv(&right_typetag);
 	
-	if(binop != EQUALS) binary_conv_right(left_typetag, &right_typetag);
+	/*if(binop != EQUALS)*/ binary_conv_right(left_typetag, &right_typetag);
 
-	if(binop == EQUALS && right_arg->expr_type == BINOP 
+	/*if(binop == EQUALS && right_arg->expr_type == BINOP 
 		&& right_arg->u_expr.binop.op == EQUALS)
 	{
 		b_assign(left_typetag);
 		return;
-	}			
+	}*/			
 	
 	if(left_arg->expr_type == FCALL || right_arg->expr_type == FCALL)
 	{
@@ -792,7 +822,43 @@ void eval_binop_comp(ENODE expr)
 		}
 	}
 	
-	if(binop == EQUALS)
+	if(left_typetag != right_typetag)
+	{
+		//error("notequaltypes");
+		
+		if((right_typetag == TYSIGNEDCHAR || right_typetag == TYSIGNEDSHORTINT) && left_typetag == TYSIGNEDINT)
+		{
+			b_convert(right_typetag, TYSIGNEDINT);
+			right_typetag = TYSIGNEDINT;
+		}
+		/*else if((right_typetag == TYSIGNEDCHAR || right_typetag == TYSIGNEDSHORTINT) && left_typetag == TYFLOAT)
+		{
+			b_convert(right_typetag, TYFLOAT);
+			right_typetag = TYFLOAT;
+		}*/
+		else if((right_typetag == TYSIGNEDCHAR || right_typetag == TYSIGNEDSHORTINT) && left_typetag == TYDOUBLE)
+		{
+			b_convert(right_typetag, TYDOUBLE);
+			right_typetag = TYDOUBLE;
+		}
+		/*else if(right_typetag == TYSIGNEDINT && left_typetag == TYFLOAT)
+		{
+			b_convert(right_typetag, TYFLOAT);
+			right_typetag = TYFLOAT;
+		}*/
+		else if(right_typetag == TYSIGNEDINT && left_typetag == TYDOUBLE)
+		{
+			b_convert(right_typetag, TYDOUBLE);
+			right_typetag = TYDOUBLE;
+		}
+		else if(right_typetag == TYFLOAT && left_typetag == TYDOUBLE)
+		{
+			b_convert(right_typetag, TYDOUBLE);
+			right_typetag = TYDOUBLE;
+		}
+	}
+	
+	/*if(binop == EQUALS)
 	{
 		if(left_typetag != right_typetag && right_arg->expr_type != FCALL) 
 		{
@@ -811,7 +877,7 @@ void eval_binop_comp(ENODE expr)
 		b_assign(left_typetag);
 	}
 	else
-	{
+	{*/
 		if(right_typetag == TYFLOAT) bug("Right typetag is float");
 		if(right_typetag != left_typetag) 
 		{
@@ -819,10 +885,10 @@ void eval_binop_comp(ENODE expr)
 		else tag = right_typetag;
 		
 		B_ARITH_REL_OP barop;
-		if(binop == PLUS) barop = B_ADD;
-		if(binop == MINUS) barop = B_SUB;
-		if(binop == TIMES) barop = B_MULT;
-		if(binop == DIVIDE) barop = B_DIV;
+		//if(binop == PLUS) barop = B_ADD;
+		//if(binop == MINUS) barop = B_SUB;
+		//if(binop == TIMES) barop = B_MULT;
+		//if(binop == DIVIDE) barop = B_DIV;
 		//if(binop == BIN_MOD) barop = B_MOD;
 		if(binop == LESS_THAN) barop = B_LT;
 		if(binop == LESS_THAN_EQUAL) barop = B_LE;
@@ -833,7 +899,7 @@ void eval_binop_comp(ENODE expr)
 		b_arith_rel_op(barop, tag);
 		right_typetag = left_typetag;
 		expr->u_expr.binop.right->type = left_arg->type;	
-	}
+	//}
 }
 
 

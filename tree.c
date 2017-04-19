@@ -342,6 +342,7 @@ ENODE new_func_node(ENODE name, EXPR_LIST args)
 {
 	ST_ID id;
 	ENODE new_node;
+	TYPE type;
 	new_node = (ENODE) malloc(sizeof(EXPRESSION_NODE));
 	if (new_node == NULL)
 		fatal("No more dynamic memory!");
@@ -350,20 +351,25 @@ ENODE new_func_node(ENODE name, EXPR_LIST args)
 		id = name->u_expr.id;
 		int block;
 		ST_DR stdr = st_lookup(id, &block);
-		if(stdr != NULL)
+		ST_DR new_stdr = stdr_alloc();
+		if(stdr != NULL && ty_query(stdr->u.decl.type) != TYFUNC)
 		{
-			new_node->expr_type = FCALL;
-			new_node->type = stdr->u.decl.type;
-			new_node->u_expr.fcall.fname = name;
-			new_node->u_expr.fcall.actual_args = args;
-			return new_node;
+			type = ty_build_func(stdr->u.decl.type, PROTOTYPE, NULL);
+			new_stdr->tag = FDECL;
+			new_stdr->u.decl.type=type;
+			new_stdr->u.decl.sc = NO_SC;
+			if(!st_replace(id, new_stdr))
+				error("No data is installed with given ID.");
+		
+			
 		}
-		else
-		{
-			error("ID is not in symbol table");
-			free(new_node);
-			free(stdr);
-		}
+		else type = stdr->u.decl.type;
+		new_node->expr_type = FCALL;
+		new_node->type = type;
+		//error("type tag: %d", ty_query(new_node->type));
+		new_node->u_expr.fcall.fname = name;
+		new_node->u_expr.fcall.actual_args = args;
+		return new_node;
 	}
 	else
 	{

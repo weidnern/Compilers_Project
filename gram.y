@@ -96,13 +96,13 @@ postfix_expr
 				//error("now");
 				TYPETAG tag = ty_query($1->type);
 				//error("here");
-	  			if(tag == TYFUNC)
-	  			{
+	  			//if(tag == TYFUNC)
+	  			//{
 	  				//error("is a function");
 	  				$$ = new_func_node($1, NULL);
-	  			}
-	  			else
-	  				error("expression is not a function type");
+	  			//}
+	  			//else
+	  				//error("expression is not a function type");
 	  		}
 	  		//error("did we make it here");
 		}
@@ -580,7 +580,34 @@ iteration_statement
 		  		global_stack = pop_clist_node(global_stack);
 				}
 	| DO statement WHILE '(' expr ')' ';' {/*not doing this*/}
-	| FOR '(' expr_opt ';' expr_opt ';' expr_opt ')' statement	{/*90 level*/}
+	| FOR '(' expr_opt ';' expr_opt ';' expr_opt ')' {
+							char * start = new_symbol();
+							char * end = new_symbol();
+							CNODE rec = new_cnode(CFOR, start, end);
+							global_stack = push_clist_node(global_stack, rec);
+							if($3 != NULL)
+							{
+								evaluate($3);
+								if(ty_query($3->type) != TYVOID) b_pop();
+							}
+							b_label(start);
+							if($5 != NULL)
+							{
+								evaluate($5);
+								b_cond_jump(ty_query($5->type), B_ZERO, end);
+							}
+							}
+	statement	{/*90 level*/
+							if($7 != NULL)
+							{
+								evaluate($7);
+								if(ty_query($3->type) != TYVOID) b_pop();
+							}
+							
+							b_jump(global_stack->ctn->start);  
+		  					b_label(global_stack->ctn->stop);
+		  					global_stack = pop_clist_node(global_stack);
+							}
 	;
 
 jump_statement
@@ -589,30 +616,37 @@ jump_statement
 	| BREAK ';'	{
 				if(global_stack != NULL)
 				b_jump(global_stack->ctn->stop); 
-			  	else error("Break not inside switch or loop"); /*might need to look at this some more to get the error messaging right*/
+			  	else error("break not inside switch or loop"); /*might need to look at this some more to get the error messaging right*/
 			  	}
 	| RETURN expr_opt ';'	{
 							if($2 != NULL)
 							{
-								TYPE exp_ret = $2->type;/*could cause some problems*/
 								evaluate($2);
+								TYPE exp_ret = $2->type;/*could cause some problems*/
 								if(exp_ret != global_type && global_type != NULL)
 								{
 									if(ty_query($2->type) != TYFUNC)
 									{
+										//error("convert and encode 1");
 										b_convert(ty_query(exp_ret), ty_query(global_type));
-								  		b_encode_return(ty_query($2->type));
+								  		//b_encode_return(ty_query($2->type));
+								  		b_encode_return(ty_query(global_type));
 									}
 									else
 									{
+										//error("convert and encode 2");
 										b_convert(TYSIGNEDINT, ty_query(global_type));
 										b_encode_return(ty_query(global_type));
 									}
 								}
-								else {b_encode_return(ty_query($2->type));}
+								else {//error("convert and encode 3");
+									b_encode_return(ty_query($2->type));}
 							 }
 							 else
+							 {
+							 	//error("convert and encode 4");
 							 	b_encode_return(TYVOID);
+							 }
 							 }
 	;
 
