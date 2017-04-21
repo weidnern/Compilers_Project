@@ -29,7 +29,7 @@ typedef enum {
 } BINOP_TYPE;
 
 typedef enum {
-	UMINUS
+	UMINUS, INDIRECT, ADDRESS
 } UNOP_TYPE;
 
 typedef enum {

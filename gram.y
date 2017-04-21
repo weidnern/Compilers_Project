@@ -132,8 +132,8 @@ unary_expr
 	;
 
 unary_operator
-	: '&' {}
-	| '*' {}
+	: '&' {/*for proj4 80%*/ $$ = ADDRESS;}
+	| '*' {/*for proj4 80%*/ $$ = INDIRECT;}
 	| '+' {}
 	| '-' {/*for 80%*/ $$ = UMINUS;}
 	| '~' {} 
